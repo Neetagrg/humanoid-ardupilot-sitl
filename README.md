@@ -1,6 +1,6 @@
-# Humanoid URDF Proto - ArduPilot SITL Foundation
+# Humanoid ArduPilot SITL - SDF 1.9 Foundation
 
-[![URDF Validation](https://github.com/Neetagrg/humanoid-urdf-proto/actions/workflows/validate_urdf.yml/badge.svg)](https://github.com/Neetagrg/humanoid-urdf-proto/actions)
+[![SDF Validation](https://github.com/Neetagrg/humanoid-ardupilot-sitl/actions/workflows/validate_sdf.yml/badge.svg)](https://github.com/Neetagrg/humanoid-ardupilot-sitl/actions)
 
 ## Overview
 
