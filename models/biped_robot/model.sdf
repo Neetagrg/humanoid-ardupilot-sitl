@@ -1,124 +1,31 @@
 <?xml version="1.0"?>
 <sdf version="1.9">
-  <model name="ArduBiped_Proto">
-    <pose>0 0 0.5 0 0 0</pose>
-    <link name="torso">
-      <inertial>
-        <mass>2.5</mass>
-        <inertia>
-          <ixx>0.020</ixx><ixy>0</ixy><ixz>0</ixz>
-          <iyy>0.020</iyy><iyz>0</iyz><izz>0.010</izz>
-        </inertia>
-      </inertial>
-      <collision name="collision">
-        <geometry><box><size>0.15 0.10 0.30</size></box></geometry>
-      </collision>
-      <visual name="visual">
-        <geometry><box><size>0.15 0.10 0.30</size></box></geometry>
-      </visual>
-      <sensor name="imu_sensor" type="imu">
-        <always_on>1</always_on>
-        <update_rate>1000</update_rate>
-      </sensor>
-    </link>
-    <link name="l_hip_pitch_link">
-      <pose>0 0.080 -0.150 0 0 0</pose>
-      <inertial><mass>0.100</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
-      <collision name="c"><geometry><sphere><radius>0.03</radius></sphere></geometry></collision>
-      <visual name="v"><geometry><sphere><radius>0.03</radius></sphere></geometry></visual>
-    </link>
-    <link name="l_thigh">
-      <pose>0 0.080 -0.350 0 0 0</pose>
-      <inertial><mass>0.500</mass><inertia><ixx>0.00375</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00375</iyy><iyz>0</iyz><izz>0.000156</izz></inertia></inertial>
-      <collision name="c"><geometry><cylinder><radius>0.025</radius><length>0.3</length></cylinder></geometry></collision>
-      <visual name="v"><geometry><cylinder><radius>0.025</radius><length>0.3</length></cylinder></geometry></visual>
-    </link>
-    <link name="l_foot">
-      <pose>0 0.080 -0.500 0 0 0</pose>
-      <inertial><mass>0.100</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
-      <collision name="c"><geometry><box><size>0.10 0.08 0.02</size></box></geometry></collision>
-      <visual name="v"><geometry><box><size>0.10 0.08 0.02</size></box></geometry></visual>
-    </link>
-    <link name="r_hip_pitch_link">
-      <pose>0 -0.080 -0.150 0 0 0</pose>
-      <inertial><mass>0.100</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
-      <collision name="c"><geometry><sphere><radius>0.03</radius></sphere></geometry></collision>
-      <visual name="v"><geometry><sphere><radius>0.03</radius></sphere></geometry></visual>
-    </link>
-    <link name="r_thigh">
-      <pose>0 -0.080 -0.350 0 0 0</pose>
-      <inertial><mass>0.500</mass><inertia><ixx>0.00375</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00375</iyy><iyz>0</iyz><izz>0.000156</izz></inertia></inertial>
-      <collision name="c"><geometry><cylinder><radius>0.025</radius><length>0.3</length></cylinder></geometry></collision>
-      <visual name="v"><geometry><cylinder><radius>0.025</radius><length>0.3</length></cylinder></geometry></visual>
-    </link>
-    <link name="r_foot">
-      <pose>0 -0.080 -0.500 0 0 0</pose>
-      <inertial><mass>0.100</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
-      <collision name="c"><geometry><box><size>0.10 0.08 0.02</size></box></geometry></collision>
-      <visual name="v"><geometry><box><size>0.10 0.08 0.02</size></box></geometry></visual>
-    </link>
-    <joint name="l_hip_pitch" type="revolute">
-      <parent>torso</parent><child>l_hip_pitch_link</child>
-      <axis><xyz>0 1 0</xyz><limit><lower>-1.571</lower><upper>0.523</upper><effort>20</effort><velocity>3</velocity></limit></axis>
-    </joint>
-    <joint name="l_knee" type="revolute">
-      <parent>l_hip_pitch_link</parent><child>l_thigh</child>
-      <axis><xyz>0 1 0</xyz><limit><lower>0</lower><upper>2.618</upper><effort>15</effort><velocity>3</velocity></limit></axis>
-    </joint>
-    <joint name="l_ankle" type="fixed">
-      <parent>l_thigh</parent><child>l_foot</child>
-    </joint>
-    <joint name="r_hip_pitch" type="revolute">
-      <parent>torso</parent><child>r_hip_pitch_link</child>
-      <axis><xyz>0 1 0</xyz><limit><lower>-1.571</lower><upper>0.523</upper><effort>20</effort><velocity>3</velocity></limit></axis>
-    </joint>
-    <joint name="r_knee" type="revolute">
-      <parent>r_hip_pitch_link</parent><child>r_thigh</child>
-      <axis><xyz>0 1 0</xyz><limit><lower>0</lower><upper>2.618</upper><effort>15</effort><velocity>3</velocity></limit></axis>
-    </joint>
-    <joint name="r_ankle" type="fixed">
-      <parent>r_thigh</parent><child>r_foot</child>
-    </joint>
-    <plugin name="ArduPilotPlugin" filename="ArduPilotPlugin">
-      <fdm_addr>127.0.0.1</fdm_addr>
-      <fdm_port_in>9002</fdm_port_in>
-      <connectionTimeoutMaxCount>5</connectionTimeoutMaxCount>
-      <lock_step>1</lock_step>
-      <modelXYZToAirplaneXForwardZDown degrees="true">0 0 0 180 0 0</modelXYZToAirplaneXForwardZDown>
-      <gazeboXYZToNED degrees="true">0 0 0 180 0 90</gazeboXYZToNED>
-      <imuName>torso::imu_sensor</imuName>
-      <control channel="0">
-        <jointName>l_hip_pitch</jointName>
-        <type>COMMAND</type>
-        <cmd_topic>/l_hip_pitch/cmd</cmd_topic>
-        <p_gain>2.0</p_gain>
-        <servo_min>1000</servo_min><servo_max>2000</servo_max>
-        <multiplier>1.571</multiplier><offset>-0.5</offset>
-      </control>
-      <control channel="1">
-        <jointName>r_hip_pitch</jointName>
-        <type>COMMAND</type>
-        <cmd_topic>/r_hip_pitch/cmd</cmd_topic>
-        <p_gain>2.0</p_gain>
-        <servo_min>1000</servo_min><servo_max>2000</servo_max>
-        <multiplier>1.571</multiplier><offset>-0.5</offset>
-      </control>
-      <control channel="2">
-        <jointName>l_knee</jointName>
-        <type>COMMAND</type>
-        <cmd_topic>/l_knee/cmd</cmd_topic>
-        <p_gain>2.0</p_gain>
-        <servo_min>1000</servo_min><servo_max>2000</servo_max>
-        <multiplier>2.618</multiplier><offset>-0.5</offset>
-      </control>
-      <control channel="3">
-        <jointName>r_knee</jointName>
-        <type>COMMAND</type>
-        <cmd_topic>/r_knee/cmd</cmd_topic>
-        <p_gain>2.0</p_gain>
-        <servo_min>1000</servo_min><servo_max>2000</servo_max>
-        <multiplier>2.618</multiplier><offset>-0.5</offset>
-      </control>
-    </plugin>
-  </model>
+  <world name="ardupilot_humanoid">
+    <physics name="1ms" type="ignore">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"></plugin>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"><render_engine>ogre2</render_engine></plugin>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"></plugin>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"></plugin>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"></plugin>
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="col"><geometry><plane><normal>0 0 1</normal></plane></geometry></collision>
+        <visual name="vis"><geometry><plane><normal>0 0 1</normal><size>100 100</size></plane></geometry></visual>
+      </link>
+    </model>
+    <include>
+      <uri>model://biped_robot</uri>
+      <pose>0 0 0.6 0 0 0</pose>
+    </include>
+  </world>
 </sdf>
