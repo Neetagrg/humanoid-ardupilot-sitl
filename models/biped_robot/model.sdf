@@ -1,21 +1,14 @@
 <?xml version="1.0"?>
 <sdf version="1.9">
   <model name="ArduBiped_Proto">
-    <pose>0 0 0.5 0 0 0</pose>
+    <pose>0 0 0.6 0 0 0</pose>
     <link name="torso">
       <inertial>
         <mass>2.5</mass>
-        <inertia>
-          <ixx>0.020</ixx><ixy>0</ixy><ixz>0</ixz>
-          <iyy>0.020</iyy><iyz>0</iyz><izz>0.010</izz>
-        </inertia>
+        <inertia><ixx>0.020</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.020</iyy><iyz>0</iyz><izz>0.010</izz></inertia>
       </inertial>
-      <collision name="collision">
-        <geometry><box><size>0.15 0.10 0.30</size></box></geometry>
-      </collision>
-      <visual name="visual">
-        <geometry><box><size>0.15 0.10 0.30</size></box></geometry>
-      </visual>
+      <collision name="collision"><geometry><box><size>0.15 0.10 0.30</size></box></geometry></collision>
+      <visual name="visual"><geometry><box><size>0.15 0.10 0.30</size></box></geometry></visual>
       <sensor name="imu_sensor" type="imu">
         <always_on>1</always_on>
         <update_rate>1000</update_rate>
@@ -79,5 +72,46 @@
     <joint name="r_ankle" type="fixed">
       <parent>r_thigh</parent><child>r_foot</child>
     </joint>
+    <plugin name="ArduPilotPlugin" filename="ArduPilotPlugin">
+      <fdm_addr>127.0.0.1</fdm_addr>
+      <fdm_port_in>9002</fdm_port_in>
+      <connectionTimeoutMaxCount>5</connectionTimeoutMaxCount>
+      <lock_step>1</lock_step>
+      <modelXYZToAirplaneXForwardZDown degrees="true">0 0 0 180 0 0</modelXYZToAirplaneXForwardZDown>
+      <gazeboXYZToNED degrees="true">0 0 0 180 0 90</gazeboXYZToNED>
+      <imuName>torso::imu_sensor</imuName>
+      <control channel="0">
+        <jointName>l_hip_pitch</jointName>
+        <type>COMMAND</type>
+        <cmd_topic>/l_hip_pitch/cmd</cmd_topic>
+        <p_gain>2.0</p_gain>
+        <servo_min>1000</servo_min><servo_max>2000</servo_max>
+        <multiplier>1.571</multiplier><offset>-0.5</offset>
+      </control>
+      <control channel="1">
+        <jointName>r_hip_pitch</jointName>
+        <type>COMMAND</type>
+        <cmd_topic>/r_hip_pitch/cmd</cmd_topic>
+        <p_gain>2.0</p_gain>
+        <servo_min>1000</servo_min><servo_max>2000</servo_max>
+        <multiplier>1.571</multiplier><offset>-0.5</offset>
+      </control>
+      <control channel="2">
+        <jointName>l_knee</jointName>
+        <type>COMMAND</type>
+        <cmd_topic>/l_knee/cmd</cmd_topic>
+        <p_gain>2.0</p_gain>
+        <servo_min>1000</servo_min><servo_max>2000</servo_max>
+        <multiplier>2.618</multiplier><offset>-0.5</offset>
+      </control>
+      <control channel="3">
+        <jointName>r_knee</jointName>
+        <type>COMMAND</type>
+        <cmd_topic>/r_knee/cmd</cmd_topic>
+        <p_gain>2.0</p_gain>
+        <servo_min>1000</servo_min><servo_max>2000</servo_max>
+        <multiplier>2.618</multiplier><offset>-0.5</offset>
+      </control>
+    </plugin>
   </model>
 </sdf>

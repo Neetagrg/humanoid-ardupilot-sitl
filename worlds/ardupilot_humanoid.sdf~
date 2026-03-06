@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="ardupilot_humanoid">
+    <physics type="ode"><max_step_size>0.002</max_step_size><real_time_update_rate>500</real_time_update_rate></physics>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics" />
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster" />
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands" />
+    <include><uri>model://ground_plane</uri></include>
+    <include>
+      <uri>model://biped_robot</uri>
+      <name>ArduBiped_Proto</name>
+      <pose>0 0 1.0 0 0 0</pose>
+    </include>
+  </world>
+</sdf>
