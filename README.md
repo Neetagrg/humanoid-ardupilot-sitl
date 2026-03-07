@@ -16,6 +16,7 @@ ArduPilot SITL successfully connects to the humanoid model and receives JSON sen
 - IMU gyro + accelerometer
 - Position + quaternion
 - Velocity
+- EKF3 active, pre-arm good
 
 ## Quick Start
 ```bash
@@ -24,8 +25,12 @@ cd ~/ardupilot
 Tools/autotest/sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --console
 
 # Terminal 2 — Launch Gazebo with humanoid
+export GZ_SIM_SYSTEM_PLUGIN_PATH=/usr/local/lib/ardupilot_gazebo:/usr/local/lib
 export GZ_SIM_RESOURCE_PATH=~/humanoid-ardupilot-sitl/models:$GZ_SIM_RESOURCE_PATH
-gz sim -r ~/humanoid-ardupilot-sitl/worlds/ardupilot_humanoid.sdf
+gz sim ~/humanoid-ardupilot-sitl/worlds/ardupilot_humanoid.sdf
+
+# Terminal 3 — Run balance controller
+python3 scripts/balance_controller.py
 ```
 
 ## Repository Structure
@@ -39,6 +44,7 @@ humanoid-ardupilot-sitl/
 ├── params/
 │   └── biped.param           # ArduPilot SITL parameters
 ├── scripts/
+│   ├── balance_controller.py # EKF3-based balance controller
 │   ├── calculate_com.py      # Center of mass validator
 │   ├── print_tree.py         # Kinematic tree visualizer
 │   └── validate_inertia.py   # Inertia tensor checker
@@ -67,10 +73,10 @@ humanoid-ardupilot-sitl/
 
 ## Design Decisions
 
-- **SDF not URDF**: Following Gazebo Harmonic best practices
-- **IMU at torso CoM**: Zero lever arm for EKF3, no INS_POS offset needed
-- **Physically grounded inertia**: Thin-rod formula for thighs, sphere formula for head
-- **ArduPilot plugin**: Same architecture as ardupilot_gazebo iris model
+- **SDF not URDF** — Gazebo Harmonic best practices, as recommended by mentor
+- **IMU at torso CoM** — Zero lever arm for EKF3, no INS_POS offset needed
+- **Physically grounded inertia** — Thin-rod formula for thighs, sphere for head
+- **ArduPilot plugin** — Same architecture as ardupilot_gazebo iris model
 
 ## Roadmap
 
@@ -78,7 +84,8 @@ humanoid-ardupilot-sitl/
 - [x] ArduPilot plugin with 4-channel servo mapping
 - [x] Gazebo Harmonic world file
 - [x] ArduPilot SITL JSON connection verified
-- [ ] Balance controller using EKF3 state estimation
+- [x] Balance controller using EKF3 state estimation
+- [ ] Robot standing stably on flat terrain
 - [ ] Basic gait coordination (stand → step)
 - [ ] Flat terrain navigation
 EOF
