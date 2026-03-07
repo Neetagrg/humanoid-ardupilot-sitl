@@ -85,7 +85,7 @@ humanoid-ardupilot-sitl/
 - [x] Gazebo Harmonic world file
 - [x] ArduPilot SITL JSON connection verified
 - [x] Balance controller using EKF3 state estimation
-- [ ] Robot standing stably on flat terrain
+- [x] Robot standing stably on flat terrain
 - [ ] Basic gait coordination (stand → step)
 - [ ] Flat terrain navigation
 EOF
