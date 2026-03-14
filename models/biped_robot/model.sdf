@@ -243,7 +243,7 @@
         <jointName>l_hip_pitch</jointName>
         <type>COMMAND</type>
         <cmd_topic>/l_hip_pitch/cmd</cmd_topic>
-        <p_gain>50.0</p_gain>
+        <p_gain>20.0</p_gain>
         <servo_min>1000</servo_min><servo_max>2000</servo_max>
         <multiplier>1.571</multiplier><offset>-0.5</offset>
       </control>
@@ -251,7 +251,7 @@
         <jointName>r_hip_pitch</jointName>
         <type>COMMAND</type>
         <cmd_topic>/r_hip_pitch/cmd</cmd_topic>
-        <p_gain>50.0</p_gain>
+        <p_gain>20.0</p_gain>
         <servo_min>1000</servo_min><servo_max>2000</servo_max>
         <multiplier>1.571</multiplier><offset>-0.5</offset>
       </control>
@@ -259,7 +259,7 @@
         <jointName>l_knee</jointName>
         <type>COMMAND</type>
         <cmd_topic>/l_knee/cmd</cmd_topic>
-        <p_gain>50.0</p_gain>
+        <p_gain>20.0</p_gain>
         <servo_min>1000</servo_min><servo_max>2000</servo_max>
         <multiplier>2.618</multiplier><offset>-0.5</offset>
       </control>
@@ -267,7 +267,7 @@
         <jointName>r_knee</jointName>
         <type>COMMAND</type>
         <cmd_topic>/r_knee/cmd</cmd_topic>
-        <p_gain>50.0</p_gain>
+        <p_gain>20.0</p_gain>
         <servo_min>1000</servo_min><servo_max>2000</servo_max>
         <multiplier>2.618</multiplier><offset>-0.5</offset>
       </control>
