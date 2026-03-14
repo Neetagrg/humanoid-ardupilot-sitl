@@ -86,6 +86,6 @@ humanoid-ardupilot-sitl/
 - [x] ArduPilot SITL JSON connection verified
 - [x] Balance controller using EKF3 state estimation
 - [x] Robot standing stably on flat terrain
-- [ ] Basic gait coordination (stand → step)
+- [x] Basic gait coordination (stand → step)
 - [ ] Flat terrain navigation
 EOF
