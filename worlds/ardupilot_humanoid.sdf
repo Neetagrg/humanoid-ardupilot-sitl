@@ -26,9 +26,9 @@
           <material><ambient>0.8 0.8 0.8 1</ambient><diffuse>0.8 0.8 0.8 1</diffuse></material>
         </visual>
       </link>
-        </model>
+      </model>
     <model name="ArduBiped_Proto">
-    <static>false</static>
+    <static>true</static>
         <pose>0 0 1.0 0 0 0</pose>
         <link name="torso">
           <inertial>
@@ -136,7 +136,7 @@
         <link name="l_foot">
           <pose>0 0.080 -0.560 0 0 0</pose>
           <inertial><mass>0.5</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
-          <collision name="c"><geometry><box><size>0.12 0.06 0.02</size></box></geometry>
+          <collision name="c"><geometry><box><size>0.14 0.10 0.02</size></box></geometry>
             <surface>
               <contact>
                 <ode>
@@ -152,7 +152,7 @@
               </friction>
             </surface></collision>
           <visual name="v">
-            <geometry><box><size>0.12 0.06 0.02</size></box></geometry>
+            <geometry><box><size>0.14 0.10 0.02</size></box></geometry>
             <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
           </visual>
         </link>
@@ -186,7 +186,7 @@
         <link name="r_foot">
           <pose>0 -0.080 -0.560 0 0 0</pose>
           <inertial><mass>0.5</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
-          <collision name="c"><geometry><box><size>0.12 0.06 0.02</size></box></geometry>
+          <collision name="c"><geometry><box><size>0.14 0.10 0.02</size></box></geometry>
             <surface>
               <contact>
                 <ode>
@@ -202,12 +202,12 @@
               </friction>
             </surface></collision>
           <visual name="v">
-            <geometry><box><size>0.12 0.06 0.02</size></box></geometry>
+            <geometry><box><size>0.14 0.10 0.02</size></box></geometry>
             <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
           </visual>
         </link>
         <joint name="l_hip_pitch" type="revolute">
-          <parent>torso</parent><child>l_hip_pitch_link</child>
+          <parent>l_hip_roll_link</parent><child>l_hip_pitch_link</child>
           <axis>
             <xyz>0 1 0</xyz>
             <limit><lower>-1.571</lower><upper>0.523</upper><effort>200</effort><velocity>3</velocity></limit>
@@ -234,7 +234,7 @@
         <parent>l_shin</parent><child>l_foot</child>
         <axis><xyz>0 1 0</xyz><limit><lower>-0.3</lower><upper>0.3</upper><effort>50</effort><velocity>3</velocity></limit><dynamics><damping>5.0</damping><friction>0.05</friction></dynamics></axis></joint>
         <joint name="r_hip_pitch" type="revolute">
-          <parent>torso</parent><child>r_hip_pitch_link</child>
+          <parent>r_hip_roll_link</parent><child>r_hip_pitch_link</child>
           <axis>
             <xyz>0 1 0</xyz>
             <limit><lower>-1.571</lower><upper>0.523</upper><effort>200</effort><velocity>3</velocity></limit>
@@ -359,6 +359,50 @@
           <d_gain>0.1</d_gain>
           <cmd_max>30</cmd_max>
           <cmd_min>-30</cmd_min>
+        </plugin>
+
+        <link name="l_hip_roll_link">
+          <pose>0 0.090 -0.10 0 0 0</pose>
+          <inertial><mass>0.1</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
+          <collision name="c"><geometry><sphere><radius>0.02</radius></sphere></geometry></collision>
+          <visual name="v"><geometry><sphere><radius>0.02</radius></sphere></geometry><material><ambient>1 0 0 1</ambient></material></visual>
+        </link>
+        <link name="r_hip_roll_link">
+          <pose>0 -0.090 -0.10 0 0 0</pose>
+          <inertial><mass>0.1</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
+          <collision name="c"><geometry><sphere><radius>0.02</radius></sphere></geometry></collision>
+          <visual name="v"><geometry><sphere><radius>0.02</radius></sphere></geometry><material><ambient>1 0 0 1</ambient></material></visual>
+        </link>
+        <joint name="l_hip_roll" type="revolute">
+          <parent>torso</parent><child>l_hip_roll_link</child>
+          <axis>
+            <xyz>1 0 0</xyz>
+            <limit><lower>-0.4</lower><upper>0.4</upper><effort>100</effort><velocity>3</velocity></limit>
+            <dynamics><damping>2.0</damping><friction>0.1</friction></dynamics>
+          </axis>
+        </joint>
+        <joint name="r_hip_roll" type="revolute">
+          <parent>torso</parent><child>r_hip_roll_link</child>
+          <axis>
+            <xyz>1 0 0</xyz>
+            <limit><lower>-0.4</lower><upper>0.4</upper><effort>100</effort><velocity>3</velocity></limit>
+            <dynamics><damping>2.0</damping><friction>0.1</friction></dynamics>
+          </axis>
+        </joint>
+
+        <plugin filename="gz-sim-joint-position-controller-system"
+                name="gz::sim::systems::JointPositionController">
+          <joint_name>l_hip_roll</joint_name>
+          <topic>/l_hip_roll/cmd</topic>
+          <p_gain>2</p_gain><i_gain>0.01</i_gain><d_gain>0.1</d_gain>
+          <cmd_max>30</cmd_max><cmd_min>-30</cmd_min>
+        </plugin>
+        <plugin filename="gz-sim-joint-position-controller-system"
+                name="gz::sim::systems::JointPositionController">
+          <joint_name>r_hip_roll</joint_name>
+          <topic>/r_hip_roll/cmd</topic>
+          <p_gain>2</p_gain><i_gain>0.01</i_gain><d_gain>0.1</d_gain>
+          <cmd_max>30</cmd_max><cmd_min>-30</cmd_min>
         </plugin>
       </model>
   </world>
