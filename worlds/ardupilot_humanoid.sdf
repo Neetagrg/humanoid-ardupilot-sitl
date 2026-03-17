@@ -28,7 +28,7 @@
       </link>
     </model>
     <model name="ArduBiped_Proto">
-    <static>true</static>
+    <static>false</static>
         <pose>0 0 0.6 0 0 0</pose>
         <link name="torso">
           <inertial>
