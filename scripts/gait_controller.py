@@ -30,15 +30,17 @@ integral, last_error, last_time = 0, 0, time.time()
 
 HIP_STAND = -0.09
 KNEE_STAND = 0.35
-KNEE_LIFT  = 1.40
-HIP_STEP   = 0.30
-DURATION   = 2.0
+KNEE_LIFT  = 0.55
+HIP_STEP   = 0.15
+DURATION   = 2.5
 
 # Penguin gait - no lateral shift, alternate knee lift with hip pitch
 gait_phases = [
     ( HIP_STAND,           HIP_STAND,           KNEE_STAND, KNEE_STAND, "STAND"),
+    ( HIP_STAND-0.05,      HIP_STAND+0.05,      KNEE_STAND, KNEE_STAND, "SHIFT_R"),
     ( HIP_STAND+HIP_STEP,  HIP_STAND,           KNEE_LIFT,  KNEE_STAND, "STEP_L"),
     ( HIP_STAND,           HIP_STAND,           KNEE_STAND, KNEE_STAND, "STAND"),
+    ( HIP_STAND+0.05,      HIP_STAND-0.05,      KNEE_STAND, KNEE_STAND, "SHIFT_L"),
     ( HIP_STAND,           HIP_STAND+HIP_STEP,  KNEE_STAND, KNEE_LIFT,  "STEP_R"),
 ]
 
