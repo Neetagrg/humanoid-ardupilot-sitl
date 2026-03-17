@@ -33,7 +33,7 @@
         <link name="torso">
           <inertial>
             <mass>2.5</mass>
-            <inertia><ixx>0.020</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.020</iyy><iyz>0</iyz><izz>0.010</izz></inertia>
+            <inertia><ixx>0.020000</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.020000</iyy><iyz>0</iyz><izz>0.010000</izz></inertia>
           </inertial>
           <collision name="collision"><geometry><box><size>0.15 0.10 0.30</size></box></geometry></collision>
           <visual name="visual">
@@ -94,15 +94,19 @@
           </visual>
         </link>
         <joint name="l_shoulder" type="fixed">
+          <pose>0 0.130 0.050 0 0 0</pose>
           <parent>torso</parent><child>l_upper_arm</child>
         </joint>
         <joint name="r_shoulder" type="fixed">
+          <pose>0 -0.130 0.050 0 0 0</pose>
           <parent>torso</parent><child>r_upper_arm</child>
         </joint>
         <joint name="l_elbow" type="fixed">
+          <pose>0 0.130 -0.100 0 0 0</pose>
           <parent>l_upper_arm</parent><child>l_forearm</child>
         </joint>
         <joint name="r_elbow" type="fixed">
+          <pose>0 -0.130 -0.100 0 0 0</pose>
           <parent>r_upper_arm</parent><child>r_forearm</child>
         </joint>
         <link name="l_hip_pitch_link">
@@ -116,7 +120,7 @@
         </link>
         <link name="l_thigh">
           <pose>0 0.080 -0.250 0 0 0</pose>
-          <inertial><mass>0.500</mass><inertia><ixx>0.00375</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00375</iyy><iyz>0</iyz><izz>0.000156</izz></inertia></inertial>
+          <inertial><mass>0.6</mass><inertia><ixx>0.004500</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.004500</iyy><iyz>0</iyz><izz>0.000187</izz></inertia></inertial>
           <collision name="c"><geometry><cylinder><radius>0.025</radius><length>0.2</length></cylinder></geometry></collision>
           <visual name="v">
             <geometry><cylinder><radius>0.025</radius><length>0.2</length></cylinder></geometry>
@@ -125,7 +129,7 @@
         </link>
         <link name="l_shin">
           <pose>0 0.080 -0.450 0 0 0</pose>
-          <inertial><mass>0.300</mass><inertia><ixx>0.00150</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00150</iyy><iyz>0</iyz><izz>0.000094</izz></inertia></inertial>
+          <inertial><mass>0.25</mass><inertia><ixx>0.001250</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.001250</iyy><iyz>0</iyz><izz>0.000078</izz></inertia></inertial>
           <collision name="c"><geometry><cylinder><radius>0.020</radius><length>0.2</length></cylinder></geometry></collision>
           <visual name="v">
             <geometry><cylinder><radius>0.020</radius><length>0.2</length></cylinder></geometry>
@@ -135,7 +139,7 @@
         <!-- l_foot with soft contact -->
         <link name="l_foot">
           <pose>0 0.080 -0.560 0 0 0</pose>
-          <inertial><mass>0.100</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
+          <inertial><mass>0.15</mass><inertia><ixx>0.000150</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.000150</iyy><iyz>0</iyz><izz>0.000150</izz></inertia></inertial>
           <collision name="c"><geometry><box><size>0.12 0.06 0.02</size></box></geometry>
             <surface>
               <contact>
@@ -167,7 +171,7 @@
         </link>
         <link name="r_thigh">
           <pose>0 -0.080 -0.250 0 0 0</pose>
-          <inertial><mass>0.500</mass><inertia><ixx>0.00375</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00375</iyy><iyz>0</iyz><izz>0.000156</izz></inertia></inertial>
+          <inertial><mass>0.6</mass><inertia><ixx>0.004500</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.004500</iyy><iyz>0</iyz><izz>0.000187</izz></inertia></inertial>
           <collision name="c"><geometry><cylinder><radius>0.025</radius><length>0.2</length></cylinder></geometry></collision>
           <visual name="v">
             <geometry><cylinder><radius>0.025</radius><length>0.2</length></cylinder></geometry>
@@ -176,7 +180,7 @@
         </link>
         <link name="r_shin">
           <pose>0 -0.080 -0.450 0 0 0</pose>
-          <inertial><mass>0.300</mass><inertia><ixx>0.00150</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00150</iyy><iyz>0</iyz><izz>0.000094</izz></inertia></inertial>
+          <inertial><mass>0.25</mass><inertia><ixx>0.001250</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.001250</iyy><iyz>0</iyz><izz>0.000078</izz></inertia></inertial>
           <collision name="c"><geometry><cylinder><radius>0.020</radius><length>0.2</length></cylinder></geometry></collision>
           <visual name="v">
             <geometry><cylinder><radius>0.020</radius><length>0.2</length></cylinder></geometry>
@@ -185,7 +189,7 @@
         </link>
         <link name="r_foot">
           <pose>0 -0.080 -0.560 0 0 0</pose>
-          <inertial><mass>0.100</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
+          <inertial><mass>0.15</mass><inertia><ixx>0.000150</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.000150</iyy><iyz>0</iyz><izz>0.000150</izz></inertia></inertial>
           <collision name="c"><geometry><box><size>0.12 0.06 0.02</size></box></geometry>
             <surface>
               <contact>
@@ -223,6 +227,7 @@
           </axis>
         </joint>
         <joint name="l_knee_shin" type="revolute">
+          <pose>0 0.080 -0.450 0 0 0</pose>
           <parent>l_thigh</parent><child>l_shin</child>
           <axis>
             <xyz>0 1 0</xyz>
@@ -230,8 +235,9 @@
             <dynamics><damping>5.0</damping><friction>0.5</friction></dynamics>
           </axis>
         </joint>
-        <joint name="l_ankle" type="fixed">
+        <joint name="l_ankle" type="revolute">
           <parent>l_shin</parent><child>l_foot</child>
+          <axis><xyz>0 1 0</xyz><limit><lower>-0.5</lower><upper>0.5</upper><effort>50</effort><velocity>3</velocity></limit><dynamics><damping>0.5</damping><friction>0.05</friction></dynamics></axis>
         </joint>
         <joint name="r_hip_pitch" type="revolute">
           <parent>torso</parent><child>r_hip_pitch_link</child>
@@ -250,6 +256,7 @@
           </axis>
         </joint>
         <joint name="r_knee_shin" type="revolute">
+          <pose>0 -0.080 -0.450 0 0 0</pose>
           <parent>r_thigh</parent><child>r_shin</child>
           <axis>
             <xyz>0 1 0</xyz>
@@ -257,8 +264,9 @@
             <dynamics><damping>5.0</damping><friction>0.5</friction></dynamics>
           </axis>
         </joint>
-        <joint name="r_ankle" type="fixed">
+        <joint name="r_ankle" type="revolute">
           <parent>r_shin</parent><child>r_foot</child>
+          <axis><xyz>0 1 0</xyz><limit><lower>-0.5</lower><upper>0.5</upper><effort>50</effort><velocity>3</velocity></limit><dynamics><damping>0.5</damping><friction>0.05</friction></dynamics></axis>
         </joint>
         <plugin name="ArduPilotPlugin" filename="ArduPilotPlugin">
           <fdm_addr>127.0.0.1</fdm_addr>
