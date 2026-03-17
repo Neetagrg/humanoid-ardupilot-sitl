@@ -1,60 +1,82 @@
 #!/usr/bin/env python3
-import time
-import subprocess
+"""
+Gait Controller v5 - penguin walk, no lateral shift
+Uses alternating hip pitch only for forward motion
+"""
 from pymavlink import mavutil
-
-MAVLINK_URL = 'udp:127.0.0.1:14551'
-HIP_STAND   = -0.15
-KNEE_STAND  =  0.35
-KNEE_LIFT   =  1.20
-HIP_STEP    =  0.20
-HIP_SHIFT   =  0.12
-SHIFT_TIME  = 1.5
-STEP_TIME   = 2.0
-RETURN_TIME = 1.0
+import time, math, subprocess
 
 def send_joint(topic, angle):
-    subprocess.Popen(['gz','topic','-t',topic,'-m','gz.msgs.Double','-p',f'data: {angle:.4f}'],
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.Popen(
+        f'gz topic -t {topic} -m gz.msgs.Double -p "data: {angle}"',
+        shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def send_pose(lh, rh, lk, rk):
-    send_joint('/l_hip_pitch/cmd', lh)
-    send_joint('/r_hip_pitch/cmd', rh)
-    send_joint('/l_knee/cmd', lk)
-    send_joint('/r_knee/cmd', rk)
-    send_joint('/l_ankle/cmd', 0.0)
-    send_joint('/r_ankle/cmd', 0.0)
-
-def get_bal(mav):
-    msg = mav.recv_match(type='ATTITUDE', blocking=True, timeout=0.5)
-    return msg.pitch if msg else 0.0
-
-print("Connecting...")
-mav = mavutil.mavlink_connection(MAVLINK_URL)
+print("Connecting to ArduPilot...")
+mav = mavutil.mavlink_connection('udp:0.0.0.0:14551')
 mav.wait_heartbeat()
 print("Connected!")
 
-phases = [
-    ('STAND',       SHIFT_TIME,  lambda: send_pose(HIP_STAND, HIP_STAND, KNEE_STAND, KNEE_STAND)),
-    ('SHIFT_RIGHT', SHIFT_TIME,  lambda: send_pose(HIP_STAND+HIP_SHIFT, HIP_STAND-HIP_SHIFT, KNEE_STAND, KNEE_STAND)),
-    ('STEP_LEFT',   STEP_TIME,   lambda: send_pose(HIP_STAND+HIP_SHIFT+HIP_STEP, HIP_STAND-HIP_SHIFT, KNEE_LIFT, KNEE_STAND)),
-    ('RETURN',      RETURN_TIME, lambda: send_pose(HIP_STAND, HIP_STAND, KNEE_STAND, KNEE_STAND)),
-    ('STAND',       SHIFT_TIME,  lambda: send_pose(HIP_STAND, HIP_STAND, KNEE_STAND, KNEE_STAND)),
-    ('SHIFT_LEFT',  SHIFT_TIME,  lambda: send_pose(HIP_STAND-HIP_SHIFT, HIP_STAND+HIP_SHIFT, KNEE_STAND, KNEE_STAND)),
-    ('STEP_RIGHT',  STEP_TIME,   lambda: send_pose(HIP_STAND-HIP_SHIFT, HIP_STAND+HIP_SHIFT+HIP_STEP, KNEE_STAND, KNEE_LIFT)),
-    ('RETURN',      RETURN_TIME, lambda: send_pose(HIP_STAND, HIP_STAND, KNEE_STAND, KNEE_STAND)),
+print("Calibrating...")
+samples = []
+while len(samples) < 50:
+    msg = mav.recv_match(type='ATTITUDE', blocking=True, timeout=1.0)
+    if msg:
+        samples.append(msg.pitch)
+STANDING_PITCH = sum(samples) / len(samples)
+print(f"Standing pitch: {math.degrees(STANDING_PITCH):+.1f}°")
+
+Kp, Ki, Kd = 0.15, 0.001, 0.02
+integral, last_error, last_time = 0, 0, time.time()
+
+HIP_STAND = -0.09
+KNEE_STAND = 0.35
+KNEE_LIFT  = 1.40
+HIP_STEP   = 0.30
+DURATION   = 2.0
+
+# Penguin gait - no lateral shift, alternate knee lift with hip pitch
+gait_phases = [
+    ( HIP_STAND,           HIP_STAND,           KNEE_STAND, KNEE_STAND, "STAND"),
+    ( HIP_STAND+HIP_STEP,  HIP_STAND,           KNEE_LIFT,  KNEE_STAND, "STEP_L"),
+    ( HIP_STAND,           HIP_STAND,           KNEE_STAND, KNEE_STAND, "STAND"),
+    ( HIP_STAND,           HIP_STAND+HIP_STEP,  KNEE_STAND, KNEE_LIFT,  "STEP_R"),
 ]
 
-phase = 0
+print("Stabilizing 5 seconds...")
 phase_start = time.time()
+gait_step = 0
+gait_active = False
+
 while True:
-    name, duration, action = phases[phase % len(phases)]
-    elapsed = time.time() - phase_start
-    if elapsed >= duration:
-        phase += 1
-        phase_start = time.time()
-        continue
-    bal = get_bal(mav)
-    action()
-    print(f"{name:12s} | bal:{bal:+.3f} | t:{elapsed:.1f}/{duration:.1f}")
-    time.sleep(0.2)
+    msg = mav.recv_match(type='ATTITUDE', blocking=True, timeout=0.1)
+    now = time.time()
+    if msg:
+        pitch = msg.pitch
+        dt = max(now - last_time, 0.01)
+        error = pitch - STANDING_PITCH
+        integral = max(-0.5, min(0.5, integral + error * dt))
+        derivative = (error - last_error) / dt
+        bal = max(-0.3, min(0.3, Kp*error + Ki*integral + Kd*derivative))
+        last_error, last_time = error, now
+
+        if not gait_active:
+            lh = rh = HIP_STAND - bal
+            lk = rk = KNEE_STAND
+            label = "STABILIZE"
+            if now - phase_start > 5.0:
+                gait_active = True
+                phase_start = now
+                print("Gait starting!")
+        else:
+            if now - phase_start > DURATION:
+                gait_step = (gait_step + 1) % len(gait_phases)
+                phase_start = now
+            lh, rh, lk, rk, label = gait_phases[gait_step]
+            lh -= bal
+            rh -= bal
+
+        send_joint('/l_hip_pitch/cmd', lh)
+        send_joint('/r_hip_pitch/cmd', rh)
+        send_joint('/l_knee/cmd', lk)
+        send_joint('/r_knee/cmd', rk)
+        print(f"{label:12s} | bal:{bal:+.3f} | LH:{lh:+.2f} RH:{rh:+.2f} LK:{lk:+.2f} RK:{rk:+.2f}")
