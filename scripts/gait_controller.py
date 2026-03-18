@@ -5,9 +5,9 @@ from pymavlink import mavutil
 MAVLINK_URL = 'udp:127.0.0.1:14551'
 HIP_STAND  = -0.09
 KNEE_STAND =  0.35
-KNEE_LIFT  =  0.55
-HIP_STEP   =  0.15
-DURATION   =  2.5
+KNEE_LIFT  =  0.38
+HIP_STEP   =  0.20
+DURATION   =  6.0
 
 Kp, Ki, Kd = 0.40, 0.002, 0.08
 integral, last_error, last_time = 0, 0, time.time()
@@ -41,6 +41,11 @@ print("Connected!")
 # Kill startup.sh now that we're connected
 subprocess.run(['pkill', '-f', 'startup.sh'], capture_output=True)
 print("startup.sh stopped")
+# Immediately hold standing pose to prevent fall
+print("Holding pose...")
+for _ in range(20):
+    send_pose(HIP_STAND, HIP_STAND, KNEE_STAND, KNEE_STAND)
+    time.sleep(0.05)
 
 # Calibrate standing pitch
 print("Calibrating...")
@@ -78,6 +83,9 @@ while time.time() - t_start < 3.0:
     time.sleep(0.05)
 
 print("\nGait starting!")
+# Reset balance integral to prevent carry-over from stabilize phase
+integral = 0
+last_error = 0
 phase = 0
 phase_start = time.time()
 
