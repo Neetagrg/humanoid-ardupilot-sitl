@@ -5,7 +5,7 @@ from pymavlink import mavutil
 MAVLINK_URL = 'udp:127.0.0.1:14551'
 HIP_STAND  = -0.09
 KNEE_STAND =  0.35
-KNEE_LIFT  =  0.38
+KNEE_LIFT  =  0.55
 HIP_STEP   =  0.05
 DURATION   =  3.0
 

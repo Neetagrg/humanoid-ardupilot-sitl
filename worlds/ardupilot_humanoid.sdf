@@ -29,7 +29,7 @@
     </model>
     <model name="ArduBiped_Proto">
     
-    <static>true</static>
+    <static>false</static>
         <pose>0 0 0.57 0.12 0 0</pose>
         <link name="torso">
           <inertial>
@@ -118,31 +118,34 @@
         <link name="l_thigh">
           <pose>0 0.080 -0.250 0 0 0</pose>
           <inertial><mass>0.500</mass><inertia><ixx>0.00375</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00375</iyy><iyz>0</iyz><izz>0.000156</izz></inertia></inertial>
-          <collision name="c"><geometry><cylinder><radius>0.025</radius><length>0.2</length></cylinder></geometry></collision>
+          <collision name="c"><geometry><box><size>0.06 0.04 0.20</size></box></geometry></collision>
           <visual name="v">
-            <geometry><cylinder><radius>0.025</radius><length>0.2</length></cylinder></geometry>
+            <geometry><box><size>0.06 0.04 0.20</size></box></geometry>
             <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material>
           </visual>
         </link>
         <link name="l_shin">
           <pose>0 0.080 -0.450 0 0 0</pose>
           <inertial><mass>0.300</mass><inertia><ixx>0.00150</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00150</iyy><iyz>0</iyz><izz>0.000094</izz></inertia></inertial>
-          <collision name="c"><geometry><cylinder><radius>0.020</radius><length>0.2</length></cylinder></geometry></collision>
+          <collision name="c"><geometry><box><size>0.05 0.03 0.20</size></box></geometry></collision>
           <visual name="v">
-            <geometry><cylinder><radius>0.020</radius><length>0.2</length></cylinder></geometry>
+            <geometry><box><size>0.05 0.03 0.20</size></box></geometry>
             <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material>
           </visual>
         </link>
         <!-- l_foot with soft contact -->
         <link name="l_foot">
-      <visual name="red_foot_vis">
-        <geometry><box><size>0.20 0.12 0.04</size></box></geometry>
-        <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-      </visual>
-      <collision name="red_foot_coll">
-        <geometry><box><size>0.20 0.12 0.04</size></box></geometry>
-        <surface><friction><ode><mu>100</mu><mu2>100</mu2></ode></friction></surface>
-      </collision></link>
+          <pose>0 0.080 -0.560 0 0 0</pose>
+          <inertial><mass>0.150</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0003</iyy><iyz>0</iyz><izz>0.0004</izz></inertia></inertial>
+          <collision name="c">
+            <geometry><box><size>0.18 0.10 0.02</size></box></geometry>
+            <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction></surface>
+          </collision>
+          <visual name="v">
+            <geometry><box><size>0.18 0.10 0.02</size></box></geometry>
+            <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+          </visual>
+        </link>
         <link name="r_hip_pitch_link">
           <pose>0 -0.080 -0.150 0 0 0</pose>
           <inertial><mass>0.100</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
@@ -155,30 +158,33 @@
         <link name="r_thigh">
           <pose>0 -0.080 -0.250 0 0 0</pose>
           <inertial><mass>0.500</mass><inertia><ixx>0.00375</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00375</iyy><iyz>0</iyz><izz>0.000156</izz></inertia></inertial>
-          <collision name="c"><geometry><cylinder><radius>0.025</radius><length>0.2</length></cylinder></geometry></collision>
+          <collision name="c"><geometry><box><size>0.06 0.04 0.20</size></box></geometry></collision>
           <visual name="v">
-            <geometry><cylinder><radius>0.025</radius><length>0.2</length></cylinder></geometry>
+            <geometry><box><size>0.06 0.04 0.20</size></box></geometry>
             <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material>
           </visual>
         </link>
         <link name="r_shin">
           <pose>0 -0.080 -0.450 0 0 0</pose>
           <inertial><mass>0.300</mass><inertia><ixx>0.00150</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00150</iyy><iyz>0</iyz><izz>0.000094</izz></inertia></inertial>
-          <collision name="c"><geometry><cylinder><radius>0.020</radius><length>0.2</length></cylinder></geometry></collision>
+          <collision name="c"><geometry><box><size>0.05 0.03 0.20</size></box></geometry></collision>
           <visual name="v">
-            <geometry><cylinder><radius>0.020</radius><length>0.2</length></cylinder></geometry>
+            <geometry><box><size>0.05 0.03 0.20</size></box></geometry>
             <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material>
           </visual>
         </link>
         <link name="r_foot">
-      <visual name="red_foot_vis">
-        <geometry><box><size>0.20 0.12 0.04</size></box></geometry>
-        <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-      </visual>
-      <collision name="red_foot_coll">
-        <geometry><box><size>0.20 0.12 0.04</size></box></geometry>
-        <surface><friction><ode><mu>100</mu><mu2>100</mu2></ode></friction></surface>
-      </collision></link>
+          <pose>0 -0.080 -0.560 0 0 0</pose>
+          <inertial><mass>0.150</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0003</iyy><iyz>0</iyz><izz>0.0004</izz></inertia></inertial>
+          <collision name="c">
+            <geometry><box><size>0.18 0.10 0.02</size></box></geometry>
+            <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction></surface>
+          </collision>
+          <visual name="v">
+            <geometry><box><size>0.18 0.10 0.02</size></box></geometry>
+            <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+          </visual>
+        </link>
         <joint name="l_hip_pitch" type="revolute">
           <parent>torso</parent><child>l_hip_pitch_link</child>
           <axis>
@@ -245,7 +251,7 @@
             <jointName>l_hip_pitch</jointName>
             <type>COMMAND</type>
             <cmd_topic>/l_hip_pitch/cmd</cmd_topic>
-            <p_gain>500</p_gain>
+            <p_gain>8</p_gain>
             <servo_min>1000</servo_min><servo_max>2000</servo_max>
             <multiplier>1.571</multiplier><offset>-0.5</offset>
           </control>
@@ -253,7 +259,7 @@
             <jointName>r_hip_pitch</jointName>
             <type>COMMAND</type>
             <cmd_topic>/r_hip_pitch/cmd</cmd_topic>
-            <p_gain>500</p_gain>
+            <p_gain>8</p_gain>
             <servo_min>1000</servo_min><servo_max>2000</servo_max>
             <multiplier>1.571</multiplier><offset>-0.5</offset>
           </control>
@@ -261,7 +267,7 @@
             <jointName>l_knee</jointName>
             <type>COMMAND</type>
             <cmd_topic>/l_knee/cmd</cmd_topic>
-            <p_gain>500</p_gain>
+            <p_gain>8</p_gain>
             <servo_min>1000</servo_min><servo_max>2000</servo_max>
             <multiplier>2.618</multiplier><offset>-0.5</offset>
           </control>
@@ -269,7 +275,7 @@
             <jointName>r_knee</jointName>
             <type>COMMAND</type>
             <cmd_topic>/r_knee/cmd</cmd_topic>
-            <p_gain>500</p_gain>
+            <p_gain>8</p_gain>
             <servo_min>1000</servo_min><servo_max>2000</servo_max>
             <multiplier>2.618</multiplier><offset>-0.5</offset>
           </control>
@@ -284,7 +290,7 @@
           <joint_name>l_hip_pitch</joint_name>
           <topic>/l_hip_pitch/cmd</topic>
           <initial_position>-0.09</initial_position>
-          <p_gain>500</p_gain>
+          <p_gain>8</p_gain>
           <i_gain>0.01</i_gain>
           <d_gain>10.0</d_gain>
           <cmd_max>30</cmd_max>
@@ -295,7 +301,7 @@
           <joint_name>r_hip_pitch</joint_name>
           <topic>/r_hip_pitch/cmd</topic>
           <initial_position>-0.09</initial_position>
-          <p_gain>500</p_gain>
+          <p_gain>8</p_gain>
           <i_gain>0.01</i_gain>
           <d_gain>10.0</d_gain>
           <cmd_max>30</cmd_max>
@@ -306,7 +312,7 @@
           <joint_name>l_knee</joint_name>
           <topic>/l_knee/cmd</topic>
           <initial_position>0.35</initial_position>
-          <p_gain>500</p_gain>
+          <p_gain>8</p_gain>
           <i_gain>0.01</i_gain>
           <d_gain>10.0</d_gain>
           <cmd_max>30</cmd_max>
@@ -317,7 +323,7 @@
           <joint_name>r_knee</joint_name>
           <topic>/r_knee/cmd</topic>
           <initial_position>0.35</initial_position>
-          <p_gain>500</p_gain>
+          <p_gain>8</p_gain>
           <i_gain>0.01</i_gain>
           <d_gain>10.0</d_gain>
           <cmd_max>30</cmd_max>
