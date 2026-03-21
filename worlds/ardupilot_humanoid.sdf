@@ -310,7 +310,8 @@
                 name="gz::sim::systems::JointPositionController">
           <joint_name>l_hip_pitch</joint_name>
           <topic>/l_hip_pitch/cmd</topic>
-          <p_gain>2</p_gain>
+          <initial_position>-0.09</initial_position>
+          <p_gain>25</p_gain>
           <i_gain>0.01</i_gain>
           <d_gain>0.1</d_gain>
           <cmd_max>30</cmd_max>
@@ -320,7 +321,8 @@
                 name="gz::sim::systems::JointPositionController">
           <joint_name>r_hip_pitch</joint_name>
           <topic>/r_hip_pitch/cmd</topic>
-          <p_gain>2</p_gain>
+          <initial_position>-0.09</initial_position>
+          <p_gain>25</p_gain>
           <i_gain>0.01</i_gain>
           <d_gain>0.1</d_gain>
           <cmd_max>30</cmd_max>
@@ -330,7 +332,8 @@
                 name="gz::sim::systems::JointPositionController">
           <joint_name>l_knee</joint_name>
           <topic>/l_knee/cmd</topic>
-          <p_gain>2</p_gain>
+          <initial_position>0.35</initial_position>
+          <p_gain>25</p_gain>
           <i_gain>0.01</i_gain>
           <d_gain>0.1</d_gain>
           <cmd_max>30</cmd_max>
@@ -340,7 +343,8 @@
                 name="gz::sim::systems::JointPositionController">
           <joint_name>r_knee</joint_name>
           <topic>/r_knee/cmd</topic>
-          <p_gain>2</p_gain>
+          <initial_position>0.35</initial_position>
+          <p_gain>25</p_gain>
           <i_gain>0.01</i_gain>
           <d_gain>0.1</d_gain>
           <cmd_max>30</cmd_max>

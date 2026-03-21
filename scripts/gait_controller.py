@@ -5,11 +5,11 @@ from pymavlink import mavutil
 MAVLINK_URL = 'udp:127.0.0.1:14551'
 HIP_STAND  = -0.09
 KNEE_STAND =  0.35
-KNEE_LIFT  =  0.38
-HIP_STEP   =  0.20
-DURATION   =  6.0
+KNEE_LIFT  =  0.36
+HIP_STEP   =  0.05
+DURATION   =  3.0
 
-Kp, Ki, Kd = 0.40, 0.002, 0.08
+Kp, Ki, Kd = 0.08, 0.001, 0.01
 integral, last_error, last_time = 0, 0, time.time()
 
 def send(topic, val):
@@ -33,6 +33,16 @@ def balance(pitch, dt):
     last_error = error
     return max(-0.3, min(0.3, Kp*error + Ki*integral + Kd*derivative))
 
+# Hold pose BEFORE connecting to MAVLink
+print("Pre-holding pose before MAVLink connection...")
+for _ in range(40):
+    send('/l_hip_pitch/cmd', -0.09)
+    send('/r_hip_pitch/cmd', -0.09)
+    send('/l_knee/cmd', 0.35)
+    send('/r_knee/cmd', 0.35)
+    send('/l_ankle/cmd', 0.0)
+    send('/r_ankle/cmd', 0.0)
+    time.sleep(0.05)
 print("Connecting to ArduPilot...")
 mav = mavutil.mavlink_connection('udp:0.0.0.0:14551')
 mav.wait_heartbeat()
