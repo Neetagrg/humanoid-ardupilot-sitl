@@ -248,5 +248,9 @@
     <plugin filename="gz-sim-joint-state-publisher-system"
             name="gz::sim::systems::JointStatePublisher">
     </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController"><joint_name>l_hip_pitch</joint_name><topic>/l_hip_pitch/cmd</topic><p_gain>8</p_gain><i_gain>0.01</i_gain><d_gain>0.1</d_gain></plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController"><joint_name>r_hip_pitch</joint_name><topic>/r_hip_pitch/cmd</topic><p_gain>8</p_gain><i_gain>0.01</i_gain><d_gain>0.1</d_gain></plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController"><joint_name>l_knee</joint_name><topic>/l_knee/cmd</topic><p_gain>8</p_gain><i_gain>0.01</i_gain><d_gain>0.1</d_gain></plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController"><joint_name>r_knee</joint_name><topic>/r_knee/cmd</topic><p_gain>8</p_gain><i_gain>0.01</i_gain><d_gain>0.1</d_gain></plugin>
   </model>
 </sdf>

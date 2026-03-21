@@ -24,20 +24,20 @@ def mavlink_reader(mav):
             with _lock:
                 pitch=msg.pitch; roll=msg.roll
 
-def send_joint(topic, angle):
+def send_joint(topic, angle_rad):
     subprocess.Popen(['gz','topic','-t',topic,'-m','gz.msgs.Double',
-                      '-p',f'data: {angle:.4f}'],
+                      '-p',f'data: {angle_rad:.4f}'],
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def send_all(lhr,lhp,lk,la,rhr,rhp,rk,ra):
-    send_joint('/l_hip_roll/cmd',lhr)
-    send_joint('/l_hip_pitch/cmd',lhp)
-    send_joint('/l_knee/cmd',lk)
-    send_joint('/l_ankle/cmd',la)
-    send_joint('/r_hip_roll/cmd',rhr)
-    send_joint('/r_hip_pitch/cmd',rhp)
-    send_joint('/r_knee/cmd',rk)
-    send_joint('/r_ankle/cmd',ra)
+    send_joint('/l_hip_roll/cmd',  lhr)
+    send_joint('/l_hip_pitch/cmd', lhp)
+    send_joint('/l_knee/cmd',      lk)
+    send_joint('/l_ankle/cmd',     la)
+    send_joint('/r_hip_roll/cmd',  rhr)
+    send_joint('/r_hip_pitch/cmd', rhp)
+    send_joint('/r_knee/cmd',      rk)
+    send_joint('/r_ankle/cmd',     ra)
 
 def main():
     print("ZMP Preview Gait Controller starting...")
@@ -66,6 +66,8 @@ def main():
 
     j_l = ik_l.solve(COM_HEIGHT, 0.0, 0.0)
     j_r = ik_r.solve(COM_HEIGHT, 0.0, 0.0)
+    print(f"Standing IK: hip_pitch={j_l['hip_pitch']:.4f} rad, knee={j_l['knee']:.4f} rad")
+
     print("Holding stand 3s...")
     t0=time.time()
     while time.time()-t0 < 3.0:
