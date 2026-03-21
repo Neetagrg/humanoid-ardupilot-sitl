@@ -9,8 +9,8 @@ from foot               import SwingFootTrajectory, FootstepPlanner
 from inverse_kinematics import LegIKSolver
 
 DT=0.02; COM_HEIGHT=0.38; PREVIEW_HORIZON=20
-STEP_LENGTH=0.12; FOOT_SEP=0.08
-STEP_DURATION=0.6; DS_DURATION=0.1
+STEP_LENGTH=0.12; FOOT_SEP=0.12
+STEP_DURATION=0.8; DS_DURATION=0.2
 SWING_HEIGHT=0.08; N_STEPS=8
 Kp_bal=0.10; Ki_bal=0.001; Kd_bal=0.01
 
