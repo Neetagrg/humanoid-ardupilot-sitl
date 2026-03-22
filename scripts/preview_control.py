@@ -2,35 +2,22 @@ import numpy as np
 from scipy.linalg import solve_discrete_are
 
 class LIPMPreviewController:
-    """
-    LIPM Preview Controller using correct cosh/sinh discretization
-    from Stéphane Caron's blog: scaron.info/robotics/linear-inverted-pendulum-model.html
-    """
-    def __init__(self, dt=0.02, com_height=0.38, preview_horizon=20):
+    def __init__(self, dt=0.02, com_height=0.35, preview_horizon=20):
         self.dt = dt
         self.g  = 9.81
-        self.h  = com_height
+        self.zc = com_height
         self.N  = preview_horizon
-        self.omega = np.sqrt(self.g / self.h)
 
-        # Correct cosh/sinh discretization
-        T = dt
-        w = self.omega
-        self.A = np.array([
-            [np.cosh(T*w),      np.sinh(T*w)/w, 1-np.cosh(T*w)],
-            [w*np.sinh(T*w),    np.cosh(T*w),   -w*np.sinh(T*w)],
-            [0,                 0,              1             ]
-        ])
-        self.B = np.array([
-            [T - np.sinh(T*w)/w],
-            [1 - np.cosh(T*w)  ],
-            [T                 ]
-        ])
-        self.C = np.array([[1, 0, -self.h/self.g]])
+        Ac = np.array([[0,1,0],[0,0,1],[0,0,0]])
+        Bc = np.array([[0],[0],[1]])
+        Cc = np.array([[1, 0, -self.zc/self.g]])
 
-        # LQR gains via discrete algebraic Riccati equation
+        self.A = np.eye(3) + dt * Ac
+        self.B = dt * Bc
+        self.C = Cc
+
         Qe = 1.0
-        R  = 1e-3
+        R  = 1e-6
 
         A_aug = np.zeros((4,4))
         A_aug[0,0] = 1.0
@@ -49,7 +36,6 @@ class LIPMPreviewController:
         self.Ke = float(K[0,0])
         self.Kx = K[0,1:4].flatten()
 
-        # Preview gains
         Acl = A_aug - B_aug @ K
         self.Gp = np.zeros(self.N)
         tmp = np.linalg.inv(R + B_aug.T @ P @ B_aug) @ B_aug.T
@@ -74,26 +60,19 @@ class LIPMPreviewController:
         preview_sum = sum(self.Gp[i]*zmp_ref_preview[i] for i in range(self.N))
         u = -self.Ke*self.e - float(np.squeeze(self.Kx @ self.x)) - preview_sum
         self.x = self.A @ self.x + self.B.flatten() * float(u)
-        return float(self.x[0])
+        return float(np.squeeze(self.x[0]))
 
     @property
     def com_pos(self): return float(self.x[0])
-
     @property
     def com_vel(self): return float(self.x[1])
-
     @property
     def zmp(self): return float(np.squeeze(self.C @ self.x))
 
-    @property
-    def dcm(self):
-        """Divergent Component of Motion = com_pos + com_vel/omega"""
-        return self.com_pos + self.com_vel / self.omega
-
 
 class ZMPReferenceGenerator:
-    def __init__(self, dt=0.02, step_duration=0.8, ds_duration=0.2,
-                 step_length=0.05, foot_separation=0.12):
+    def __init__(self, dt=0.02, step_duration=0.6, ds_duration=0.1,
+                 step_length=0.06, foot_separation=0.08):
         self.dt  = dt
         self.Tss = step_duration
         self.Tds = ds_duration
@@ -118,9 +97,4 @@ class ZMPReferenceGenerator:
             for _ in range(self.Nss):
                 zmp_x.append(foot_x)
                 zmp_y.append(foot_y)
-        # Stopping phase - hold ZMP at final position for 2 seconds
-        stop_frames = int(2.0 / self.dt)
-        for _ in range(stop_frames):
-            zmp_x.append(foot_x)
-            zmp_y.append(0.0)
         return np.array(zmp_x), np.array(zmp_y)

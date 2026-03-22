@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""
-ZMP Preview Gait Controller for ArduHumanoid SITL
-Architecture: ZMP math → MAVLink servo override → ArduPilot → ArduPilotPlugin → Gazebo joints
-Based on: scaron.info/robotics/prototyping-a-walking-pattern-generator.html
-"""
-import time, math, threading
+import time, math, subprocess, threading
 import numpy as np
 from pymavlink import mavutil
 import sys
@@ -13,200 +8,137 @@ from preview_control    import LIPMPreviewController, ZMPReferenceGenerator
 from foot               import SwingFootTrajectory, FootstepPlanner
 from inverse_kinematics import LegIKSolver
 
-# ── Robot parameters ──────────────────────────────────────────────────────────
-DT           = 0.02
-COM_HEIGHT   = 0.38
-PREVIEW_HZ   = 40
-STEP_LENGTH  = 0.05
-FOOT_SEP     = 0.12
-STEP_DUR     = 0.8
-DS_DUR       = 0.2
-SWING_H      = 0.05
-N_STEPS      = 6
-G            = 9.81
-OMEGA        = math.sqrt(G / COM_HEIGHT)
+DT=0.02; COM_HEIGHT=0.38; PREVIEW_HORIZON=20
+STEP_LENGTH=0.06; FOOT_SEP=0.08
+STEP_DURATION=0.6; DS_DURATION=0.1
+SWING_HEIGHT=0.04; N_STEPS=8
+Kp_bal=0.10; Ki_bal=0.001; Kd_bal=0.01
 
-# ── DCM gains (from tuning blog) ──────────────────────────────────────────────
-DCM_KP = 2.0
-DCM_KI = 0.1
-
-# ── ArduPilot PWM conversion (from SDF) ──────────────────────────────────────
-# angle = (pwm - 1500) / 500 * multiplier + offset
-# → pwm = (angle - offset) / multiplier * 500 + 1500
-HIP_MULT  = 1.571;  HIP_OFF  = -0.5
-KNEE_MULT = 2.618;  KNEE_OFF = -0.5
-ANKLE_MULT = 1.047; ANKLE_OFF = 0.0
-
-def angle_to_pwm(angle_rad, multiplier, offset):
-    pwm = (angle_rad - offset) / multiplier * 500 + 1500
-    return int(np.clip(pwm, 1000, 2000))
-
-# ── State ─────────────────────────────────────────────────────────────────────
-pitch = 0.0; roll = 0.0; com_vx = 0.0; com_vy = 0.0
-_lock = threading.Lock()
+pitch=0.0; roll=0.0; _lock=threading.Lock()
 
 def mavlink_reader(mav):
     global pitch, roll
     while True:
-        msg = mav.recv_match(type=['ATTITUDE','LOCAL_POSITION_NED'],
-                             blocking=True, timeout=1.0)
-        if msg and msg.get_type() == 'ATTITUDE':
+        msg = mav.recv_match(type='ATTITUDE', blocking=True, timeout=1.0)
+        if msg:
             with _lock:
-                pitch = msg.pitch
-                roll  = msg.roll
+                pitch=msg.pitch; roll=msg.roll
 
-def send_joints(mav, lhr, lhp, lk, la, rhr, rhp, rk, ra):
-    """Send joint angles as MAVLink servo overrides to ArduPilot."""
-    pwms = [
-        angle_to_pwm(lhp, HIP_MULT,  HIP_OFF),   # CH1 l_hip_pitch
-        angle_to_pwm(rhp, HIP_MULT,  HIP_OFF),   # CH2 r_hip_pitch
-        angle_to_pwm(lk,  KNEE_MULT, KNEE_OFF),  # CH3 l_knee
-        angle_to_pwm(rk,  KNEE_MULT, KNEE_OFF),  # CH4 r_knee
-        angle_to_pwm(la,  ANKLE_MULT, ANKLE_OFF), # CH5 l_ankle
-        angle_to_pwm(ra,  ANKLE_MULT, ANKLE_OFF), # CH6 r_ankle
-        1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500  # CH7-16
-    ]
-    mav.mav.rc_channels_override_send(
-        mav.target_system,
-        mav.target_component,
-        *pwms[:16]
-    )
+def send_joint(topic, angle):
+    subprocess.Popen(['gz','topic','-t',topic,'-m','gz.msgs.Double',
+                      '-p',f'data: {angle:.4f}'],
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+def send_all(lhr,lhp,lk,la,rhr,rhp,rk,ra):
+    send_joint('/l_hip_roll/cmd',lhr)
+    send_joint('/l_hip_pitch/cmd',lhp)
+    send_joint('/l_knee/cmd',lk)
+    send_joint('/l_ankle/cmd',la)
+    send_joint('/r_hip_roll/cmd',rhr)
+    send_joint('/r_hip_pitch/cmd',rhp)
+    send_joint('/r_knee/cmd',rk)
+    send_joint('/r_ankle/cmd',ra)
 
 def main():
-    print("ArduHumanoid ZMP Controller")
-    print("Architecture: ZMP → MAVLink → ArduPilot → ArduPilotPlugin → Gazebo")
-    print()
-
+    print("ZMP Preview Gait Controller starting...")
     mav = mavutil.mavlink_connection('udp:0.0.0.0:14551')
     mav.wait_heartbeat()
-    print(f"Connected! System {mav.target_system}")
-
+    print("Connected!")
+    subprocess.run(['pkill','-f','startup.sh'], capture_output=True)
     threading.Thread(target=mavlink_reader, args=(mav,), daemon=True).start()
 
-    # Setup controllers
-    lipm_x = LIPMPreviewController(DT, COM_HEIGHT, PREVIEW_HZ)
-    lipm_y = LIPMPreviewController(DT, COM_HEIGHT, PREVIEW_HZ)
-    zmp_gen = ZMPReferenceGenerator(DT, STEP_DUR, DS_DUR, STEP_LENGTH, FOOT_SEP)
+    lipm_x = LIPMPreviewController(DT, COM_HEIGHT, PREVIEW_HORIZON)
+    lipm_y = LIPMPreviewController(DT, COM_HEIGHT, PREVIEW_HORIZON)
+    zmp_gen = ZMPReferenceGenerator(DT, STEP_DURATION, DS_DURATION,
+                                    STEP_LENGTH, FOOT_SEP)
     planner = FootstepPlanner(STEP_LENGTH, FOOT_SEP, N_STEPS)
-    ik_l    = LegIKSolver('left')
-    ik_r    = LegIKSolver('right')
+    ik_l = LegIKSolver('left')
+    ik_r = LegIKSolver('right')
 
-    # Generate ZMP reference
     zmp_x_ref, zmp_y_ref = zmp_gen.generate(N_STEPS)
     footsteps = planner.plan()
     total = len(zmp_x_ref)
-    pad   = PREVIEW_HZ
+    pad = PREVIEW_HORIZON
     zmp_x_pad = np.concatenate([zmp_x_ref, np.full(pad, zmp_x_ref[-1])])
     zmp_y_pad = np.concatenate([zmp_y_ref, np.full(pad, zmp_y_ref[-1])])
 
-    # Standing IK
+    bal_int=0.0; bal_last=0.0; last_t=time.time()
+
     j_l = ik_l.solve(COM_HEIGHT, 0.0, 0.0)
     j_r = ik_r.solve(COM_HEIGHT, 0.0, 0.0)
-    print(f"Standing pose:")
-    print(f"  hip_pitch={math.degrees(j_l['hip_pitch']):.1f}° "
-          f"knee={math.degrees(j_l['knee']):.1f}° "
-          f"ankle={math.degrees(j_l['ankle']):.1f}°")
-
-    # Wait for EKF3
-    print("Waiting for EKF3...")
-    while True:
-        msg = mav.recv_match(type='EKF_STATUS_REPORT', blocking=True, timeout=5.0)
-        if msg and (msg.flags & 0x1F) == 0x1F:
-            print("EKF3 ready!")
-            break
-        time.sleep(0.1)
-
-    # Hold standing pose 3s
     print("Holding stand 3s...")
-    t0 = time.time()
+    t0=time.time()
     while time.time()-t0 < 3.0:
-        send_joints(mav,
-                    j_l['hip_roll'], j_l['hip_pitch'], j_l['knee'], j_l['ankle'],
-                    j_r['hip_roll'], j_r['hip_pitch'], j_r['knee'], j_r['ankle'])
+        send_all(j_l['hip_roll'],j_l['hip_pitch'],j_l['knee'],j_l['ankle'],
+                 j_r['hip_roll'],j_r['hip_pitch'],j_r['knee'],j_r['ankle'])
         time.sleep(DT)
 
-    # Walking loop
     print(f"Walking {N_STEPS} steps...")
-    Nss = int(STEP_DUR/DT)
-    Nds = int(DS_DUR/DT)
-    step_starts = []
-    idx = 0
+    Nss=int(STEP_DURATION/DT); Nds=int(DS_DURATION/DT)
+    step_starts=[]
+    idx=0
     for _ in range(N_STEPS):
-        idx += Nds; step_starts.append(idx); idx += Nss
+        idx+=Nds; step_starts.append(idx); idx+=Nss
 
-    step_ptr   = 0
-    swing_traj = None
-    swing_time = 0.0
-    swing_side = None
-    stance_x   = {'left': 0.0, 'right': 0.0}
-    swing_x    = {'left': 0.0, 'right': 0.0}
-
-    # DCM integrator
-    dcm_int = 0.0
+    step_ptr=0; swing_traj=None; swing_time=0.0; swing_side=None
+    stance_x={'left':0.0,'right':0.0}
+    swing_x={'left':0.0,'right':0.0}
 
     for k in range(total):
-        loop_start = time.time()
+        loop_start=time.time()
+        com_x=lipm_x.step(zmp_x_pad[k:k+PREVIEW_HORIZON])
+        com_y=lipm_y.step(zmp_y_pad[k:k+PREVIEW_HORIZON])
 
-        com_x = lipm_x.step(zmp_x_pad[k:k+PREVIEW_HZ])
-        com_y = lipm_y.step(zmp_y_pad[k:k+PREVIEW_HZ])
-
-        # DCM-based balance correction
-        with _lock: p = pitch
-        dcm   = lipm_x.dcm
-        dcm_target = zmp_x_pad[k]
-        dcm_err = dcm - dcm_target
-        dcm_int = np.clip(dcm_int + dcm_err * DT, -0.2, 0.2)
-        bal = np.clip(DCM_KP * dcm_err + DCM_KI * dcm_int, -0.3, 0.3)
-
-        # Footstep trigger
         if step_ptr < len(step_starts) and k >= step_starts[step_ptr]:
-            fs = footsteps[step_ptr]
-            swing_side = fs[2]
-            swing_traj = SwingFootTrajectory(
-                swing_x[swing_side], fs[0], fs[1], STEP_DUR, SWING_H)
-            swing_time = 0.0
-            step_ptr  += 1
+            fs=footsteps[step_ptr]
+            swing_side=fs[2]
+            swing_traj=SwingFootTrajectory(
+                swing_x[swing_side], fs[0], fs[1], STEP_DURATION, SWING_HEIGHT)
+            swing_time=0.0; step_ptr+=1
 
-        hr_l = -com_y * 2.0
-        hr_r =  com_y * 2.0
+        now=time.time()
+        with _lock: p=pitch
+        dt_b=max(now-last_t, DT); last_t=now
+        bal_int=np.clip(bal_int+p*dt_b, -0.3, 0.3)
+        bal_d=(p-bal_last)/dt_b; bal_last=p
+        bal=np.clip(Kp_bal*p+Ki_bal*bal_int+Kd_bal*bal_d, -0.25, 0.25)
+
+        hr_l=-com_y*2.0+(-bal*0.3)
+        hr_r= com_y*2.0+( bal*0.3)
 
         if swing_traj and swing_side:
-            sx, sy, sz = swing_traj.at(swing_time)
-            swing_time += DT
-            if swing_side == 'left':
-                j_l = ik_l.solve(COM_HEIGHT - bal*0.1, sx-com_x, sz, hr_l)
-                j_r = ik_r.solve(COM_HEIGHT + bal*0.1, stance_x['right']-com_x, 0.0, hr_r)
-                swing_x['left'] = sx
+            sx,sy,sz=swing_traj.at(swing_time)
+            swing_time+=DT
+            if swing_side=='left':
+                j_l=ik_l.solve(COM_HEIGHT, sx-com_x, sz, hr_l)
+                j_r=ik_r.solve(COM_HEIGHT, stance_x['right']-com_x, 0.0, hr_r)
+                swing_x['left']=sx
             else:
-                j_r = ik_r.solve(COM_HEIGHT - bal*0.1, sx-com_x, sz, hr_r)
-                j_l = ik_l.solve(COM_HEIGHT + bal*0.1, stance_x['left']-com_x, 0.0, hr_l)
-                swing_x['right'] = sx
+                j_r=ik_r.solve(COM_HEIGHT, sx-com_x, sz, hr_r)
+                j_l=ik_l.solve(COM_HEIGHT, stance_x['left']-com_x, 0.0, hr_l)
+                swing_x['right']=sx
         else:
-            j_l = ik_l.solve(COM_HEIGHT, stance_x['left']-com_x,  0.0, hr_l)
-            j_r = ik_r.solve(COM_HEIGHT, stance_x['right']-com_x, 0.0, hr_r)
+            j_l=ik_l.solve(COM_HEIGHT, stance_x['left']-com_x, 0.0, hr_l)
+            j_r=ik_r.solve(COM_HEIGHT, stance_x['right']-com_x, 0.0, hr_r)
 
-        send_joints(mav,
-                    j_l['hip_roll'], j_l['hip_pitch'], j_l['knee'], j_l['ankle'],
-                    j_r['hip_roll'], j_r['hip_pitch'], j_r['knee'], j_r['ankle'])
+        send_all(j_l['hip_roll'],j_l['hip_pitch'],j_l['knee'],j_l['ankle'],
+                 j_r['hip_roll'],j_r['hip_pitch'],j_r['knee'],j_r['ankle'])
 
-        if k % 25 == 0:
-            print(f"\rk={k}/{total} com_x={com_x:+.3f} dcm={dcm:+.3f} "
-                  f"pitch={math.degrees(p):+.1f}° bal={bal:+.3f} "
+        if k%25==0:
+            print(f"\rk={k}/{total} com_x={com_x:+.3f} com_y={com_y:+.3f} "
+                  f"pitch={math.degrees(p):+.1f}deg bal={bal:+.3f} "
                   f"step={step_ptr}/{N_STEPS}", end='', flush=True)
 
-        elapsed = time.time() - loop_start
-        if elapsed < DT:
-            time.sleep(DT - elapsed)
+        elapsed=time.time()-loop_start
+        if elapsed < DT: time.sleep(DT-elapsed)
 
     print("\nDone. Returning to stand...")
-    j_l = ik_l.solve(COM_HEIGHT, 0.0, 0.0)
-    j_r = ik_r.solve(COM_HEIGHT, 0.0, 0.0)
+    j_l=ik_l.solve(COM_HEIGHT,0.0,0.0)
+    j_r=ik_r.solve(COM_HEIGHT,0.0,0.0)
     for _ in range(50):
-        send_joints(mav,
-                    j_l['hip_roll'], j_l['hip_pitch'], j_l['knee'], j_l['ankle'],
-                    j_r['hip_roll'], j_r['hip_pitch'], j_r['knee'], j_r['ankle'])
+        send_all(j_l['hip_roll'],j_l['hip_pitch'],j_l['knee'],j_l['ankle'],
+                 j_r['hip_roll'],j_r['hip_pitch'],j_r['knee'],j_r['ankle'])
         time.sleep(DT)
-    print("Complete!")
 
-if __name__ == '__main__':
+if __name__=='__main__':
     main()
