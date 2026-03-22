@@ -18,7 +18,7 @@
       <direction>-0.5 0.1 -0.9</direction>
     </light>
     <model name="ground_plane">
-      <static>true</static>
+      <static>false</static>
       <link name="link">
         <collision name="collision"><geometry><plane><normal>0 0 1</normal></plane></geometry></collision>
         <visual name="visual">
@@ -30,7 +30,7 @@
     <model name="ArduBiped_Proto">
     
     <static>false</static>
-        <pose>0 0 0.57 0.12 0 0</pose>
+        <pose>0 0 0.57 0 0 0</pose>
         <link name="torso">
           <inertial>
             <mass>2.5</mass>
@@ -189,31 +189,31 @@
           <parent>torso</parent><child>l_hip_pitch_link</child>
           <axis>
             <xyz>0 1 0</xyz>
-            <limit><lower>-1.571</lower><upper>0.523</upper><effort>200</effort><velocity>3</velocity></limit>
-            <dynamics><damping>5.0</damping><friction>1.5</friction><friction>0.5</friction></dynamics>
+            <limit><lower>-1.571</lower><upper>0.523</upper><effort>500</effort><velocity>3</velocity></limit>
+            <dynamics><damping>0.5</damping><friction>1.5</friction><friction>0.5</friction></dynamics>
           </axis>
         </joint>
-        <joint name="l_knee" type="revolute">
+        <joint name="l_knee" type="fixed">
           <parent>l_hip_pitch_link</parent><child>l_thigh</child>
           <axis>
             <xyz>0 1 0</xyz>
-            <limit><lower>0</lower><upper>2.618</upper><effort>200</effort><velocity>3</velocity></limit>
-            <dynamics><damping>5.0</damping><friction>1.5</friction><friction>0.5</friction></dynamics>
+            <limit><lower>0</lower><upper>2.618</upper><effort>500</effort><velocity>3</velocity></limit>
+            <dynamics><damping>0.5</damping><friction>1.5</friction><friction>0.5</friction></dynamics>
           </axis>
         </joint>
         <joint name="l_knee_shin" type="revolute">
           <parent>l_thigh</parent><child>l_shin</child>
           <axis>
             <xyz>0 1 0</xyz>
-            <limit><lower>0</lower><upper>2.618</upper><effort>200</effort><velocity>3</velocity></limit>
-            <dynamics><damping>5.0</damping><friction>1.5</friction><friction>0.5</friction></dynamics>
+            <limit><lower>0</lower><upper>2.618</upper><effort>500</effort><velocity>3</velocity></limit>
+            <dynamics><damping>0.5</damping><friction>1.5</friction><friction>0.5</friction></dynamics>
           </axis>
         </joint>
         <joint name="l_ankle" type="revolute">
           <parent>l_shin</parent><child>l_foot</child>
           <axis>
             <xyz>0 1 0</xyz>
-            <limit><lower>-0.523</lower><upper>0.523</upper><effort>50</effort><velocity>3</velocity></limit>
+            <limit><lower>-1.2</lower><upper>1.2</upper><effort>50</effort><velocity>3</velocity></limit>
             <dynamics><damping>2.0</damping><friction>0.5</friction></dynamics>
           </axis>
         </joint>
@@ -221,31 +221,31 @@
           <parent>torso</parent><child>r_hip_pitch_link</child>
           <axis>
             <xyz>0 1 0</xyz>
-            <limit><lower>-1.571</lower><upper>0.523</upper><effort>200</effort><velocity>3</velocity></limit>
-            <dynamics><damping>5.0</damping><friction>1.5</friction><friction>0.5</friction></dynamics>
+            <limit><lower>-1.571</lower><upper>0.523</upper><effort>500</effort><velocity>3</velocity></limit>
+            <dynamics><damping>0.5</damping><friction>1.5</friction><friction>0.5</friction></dynamics>
           </axis>
         </joint>
-        <joint name="r_knee" type="revolute">
+        <joint name="r_knee" type="fixed">
           <parent>r_hip_pitch_link</parent><child>r_thigh</child>
           <axis>
             <xyz>0 1 0</xyz>
-            <limit><lower>0</lower><upper>2.618</upper><effort>200</effort><velocity>3</velocity></limit>
-            <dynamics><damping>5.0</damping><friction>1.5</friction><friction>0.5</friction></dynamics>
+            <limit><lower>0</lower><upper>2.618</upper><effort>500</effort><velocity>3</velocity></limit>
+            <dynamics><damping>0.5</damping><friction>1.5</friction><friction>0.5</friction></dynamics>
           </axis>
         </joint>
         <joint name="r_knee_shin" type="revolute">
           <parent>r_thigh</parent><child>r_shin</child>
           <axis>
             <xyz>0 1 0</xyz>
-            <limit><lower>0</lower><upper>2.618</upper><effort>200</effort><velocity>3</velocity></limit>
-            <dynamics><damping>5.0</damping><friction>1.5</friction><friction>0.5</friction></dynamics>
+            <limit><lower>0</lower><upper>2.618</upper><effort>500</effort><velocity>3</velocity></limit>
+            <dynamics><damping>0.5</damping><friction>1.5</friction><friction>0.5</friction></dynamics>
           </axis>
         </joint>
         <joint name="r_ankle" type="revolute">
           <parent>r_shin</parent><child>r_foot</child>
           <axis>
             <xyz>0 1 0</xyz>
-            <limit><lower>-0.523</lower><upper>0.523</upper><effort>50</effort><velocity>3</velocity></limit>
+            <limit><lower>-1.2</lower><upper>1.2</upper><effort>50</effort><velocity>3</velocity></limit>
             <dynamics><damping>2.0</damping><friction>0.5</friction></dynamics>
           </axis>
         </joint>
@@ -315,45 +315,45 @@
                 name="gz::sim::systems::JointPositionController">
           <joint_name>l_hip_pitch</joint_name>
           <topic>/l_hip_pitch/cmd</topic>
-          <initial_position>-0.09</initial_position>
+          <initial_position>-0.3176</initial_position>
           <p_gain>8</p_gain>
           <i_gain>0.01</i_gain>
-          <d_gain>10.0</d_gain>
-          <cmd_max>30</cmd_max>
-          <cmd_min>-30</cmd_min>
+          <d_gain>0.1</d_gain>
+          <cmd_max>8</cmd_max>
+          <cmd_min>-8</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system"
                 name="gz::sim::systems::JointPositionController">
           <joint_name>r_hip_pitch</joint_name>
           <topic>/r_hip_pitch/cmd</topic>
-          <initial_position>-0.09</initial_position>
+          <initial_position>-0.3176</initial_position>
           <p_gain>8</p_gain>
           <i_gain>0.01</i_gain>
-          <d_gain>10.0</d_gain>
-          <cmd_max>30</cmd_max>
-          <cmd_min>-30</cmd_min>
+          <d_gain>0.1</d_gain>
+          <cmd_max>8</cmd_max>
+          <cmd_min>-8</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system"
                 name="gz::sim::systems::JointPositionController">
-          <joint_name>l_knee</joint_name>
+          <joint_name>l_knee_shin</joint_name>
           <topic>/l_knee/cmd</topic>
-          <initial_position>0.35</initial_position>
+          <initial_position>0.6351</initial_position>
           <p_gain>8</p_gain>
           <i_gain>0.01</i_gain>
-          <d_gain>10.0</d_gain>
-          <cmd_max>30</cmd_max>
-          <cmd_min>-30</cmd_min>
+          <d_gain>0.1</d_gain>
+          <cmd_max>8</cmd_max>
+          <cmd_min>-8</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system"
                 name="gz::sim::systems::JointPositionController">
-          <joint_name>r_knee</joint_name>
+          <joint_name>r_knee_shin</joint_name>
           <topic>/r_knee/cmd</topic>
-          <initial_position>0.35</initial_position>
+          <initial_position>0.6351</initial_position>
           <p_gain>8</p_gain>
           <i_gain>0.01</i_gain>
-          <d_gain>10.0</d_gain>
-          <cmd_max>30</cmd_max>
-          <cmd_min>-30</cmd_min>
+          <d_gain>0.1</d_gain>
+          <cmd_max>8</cmd_max>
+          <cmd_min>-8</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system"
                 name="gz::sim::systems::JointPositionController">
