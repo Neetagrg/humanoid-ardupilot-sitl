@@ -58,6 +58,7 @@
     <joint name="l_hip_pitch" type="revolute">
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       <parent>torso</parent><child>l_hip_pitch_link</child>
       <axis>
         <xyz>0 1 0</xyz>
@@ -165,6 +166,78 @@
         <servo_min>1000</servo_min><servo_max>2000</servo_max>
         <multiplier>2.618</multiplier><offset>-0.5</offset>
 =======
+      <parent>torso</parent><child>r_thigh</child>
+      <pose>0 -0.06 -0.025 0 0 0</pose>
+      <axis><xyz>0 1 0</xyz>
+        <limit><lower>-0.785</lower><upper>0.785</upper><effort>50</effort><velocity>5</velocity></limit>
+        <dynamics><damping>8.0</damping><friction>1.0</friction></dynamics>
+      </axis>
+    </joint>
+    <joint name="r_knee" type="revolute">
+      <parent>r_thigh</parent><child>r_shin</child>
+      <pose>0 -0.06 -0.225 0 0 0</pose>
+      <axis><xyz>0 1 0</xyz>
+        <limit><lower>-0.1</lower><upper>1.571</upper><effort>50</effort><velocity>5</velocity></limit>
+        <dynamics><damping>8.0</damping><friction>1.0</friction></dynamics>
+      </axis>
+    </joint>
+    <joint name="r_ankle" type="fixed"><parent>r_shin</parent><child>r_foot</child></joint>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>l_hip_pitch</joint_name><topic>/l_hip_pitch/cmd</topic>
+      <p_gain>40</p_gain><i_gain>0.1</i_gain><d_gain>2.0</d_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>r_hip_pitch</joint_name><topic>/r_hip_pitch/cmd</topic>
+      <p_gain>40</p_gain><i_gain>0.1</i_gain><d_gain>2.0</d_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>l_knee</joint_name><topic>/l_knee/cmd</topic>
+      <p_gain>40</p_gain><i_gain>0.1</i_gain><d_gain>2.0</d_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>r_knee</joint_name><topic>/r_knee/cmd</topic>
+      <p_gain>40</p_gain><i_gain>0.1</i_gain><d_gain>2.0</d_gain>
+    </plugin>
+    <plugin name="ArduPilotPlugin" filename="ArduPilotPlugin">
+      <fdm_addr>127.0.0.1</fdm_addr><fdm_port_in>9002</fdm_port_in>
+      <connectionTimeoutMaxCount>5</connectionTimeoutMaxCount><lock_step>0</lock_step>
+      <modelXYZToAirplaneXForwardZDown degrees="true">0 0 0 180 0 0</modelXYZToAirplaneXForwardZDown>
+      <gazeboXYZToNED degrees="true">0 0 0 180 0 90</gazeboXYZToNED>
+      <imuName>torso::imu_sensor</imuName>
+      <control channel="0"><jointName>l_hip_pitch</jointName><type>COMMAND</type>
+        <cmd_topic>/l_hip_pitch/cmd</cmd_topic><p_gain>15.0</p_gain>
+        <servo_min>1000</servo_min><servo_max>2000</servo_max><multiplier>1.571</multiplier><offset>-0.5</offset>
+      </control>
+      <control channel="1"><jointName>r_hip_pitch</jointName><type>COMMAND</type>
+        <cmd_topic>/r_hip_pitch/cmd</cmd_topic><p_gain>15.0</p_gain>
+        <servo_min>1000</servo_min><servo_max>2000</servo_max><multiplier>1.571</multiplier><offset>-0.5</offset>
+      </control>
+      <control channel="2"><jointName>l_knee</jointName><type>COMMAND</type>
+        <cmd_topic>/l_knee/cmd</cmd_topic><p_gain>15.0</p_gain>
+        <servo_min>1000</servo_min><servo_max>2000</servo_max><multiplier>1.571</multiplier><offset>-0.5</offset>
+      </control>
+      <control channel="3"><jointName>r_knee</jointName><type>COMMAND</type>
+        <cmd_topic>/r_knee/cmd</cmd_topic><p_gain>15.0</p_gain>
+        <servo_min>1000</servo_min><servo_max>2000</servo_max><multiplier>1.571</multiplier><offset>-0.5</offset>
+>>>>>>> Stashed changes
+=======
+      <parent>torso</parent><child>l_thigh</child>
+      <pose>0 0.06 -0.025 0 0 0</pose>
+      <axis><xyz>0 1 0</xyz>
+        <limit><lower>-0.785</lower><upper>0.785</upper><effort>50</effort><velocity>5</velocity></limit>
+        <dynamics><damping>8.0</damping><friction>1.0</friction></dynamics>
+      </axis>
+    </joint>
+    <joint name="l_knee" type="revolute">
+      <parent>l_thigh</parent><child>l_shin</child>
+      <pose>0 0.06 -0.225 0 0 0</pose>
+      <axis><xyz>0 1 0</xyz>
+        <limit><lower>-0.1</lower><upper>1.571</upper><effort>50</effort><velocity>5</velocity></limit>
+        <dynamics><damping>8.0</damping><friction>1.0</friction></dynamics>
+      </axis>
+    </joint>
+    <joint name="l_ankle" type="fixed"><parent>l_shin</parent><child>l_foot</child></joint>
+    <joint name="r_hip_pitch" type="revolute">
       <parent>torso</parent><child>r_thigh</child>
       <pose>0 -0.06 -0.025 0 0 0</pose>
       <axis><xyz>0 1 0</xyz>
