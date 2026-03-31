@@ -1,4 +1,4 @@
-# ArduHumanoid SITL — Bipedal Walking Robot for ArduPilot
+# ArduHumanoid SITL - Bipedal Walking Robot for ArduPilot
 
 [![Gazebo Harmonic](https://img.shields.io/badge/Gazebo-Harmonic-blue)](https://gazebosim.org)
 [![ArduPilot Rover](https://img.shields.io/badge/ArduPilot-Rover-green)](https://ardupilot.org)
