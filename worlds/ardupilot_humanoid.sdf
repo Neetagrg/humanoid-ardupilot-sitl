@@ -30,7 +30,7 @@
     <model name="ArduBiped_Proto">
     
     <static>false</static>
-        <pose>0 0 0.57 0 0 0</pose>
+        <pose>0 0 0.57 0.12 0 0</pose>
         <link name="torso">
           <inertial>
             <mass>2.5</mass>
@@ -239,8 +239,7 @@
         <joint name="r_ankle" type="fixed">
           <parent>r_shin</parent><child>r_foot</child>
         </joint>
-        
-    <plugin name="ArduPilotPlugin" filename="ArduPilotPlugin">
+        <plugin name="ArduPilotPlugin" filename="ArduPilotPlugin">
           <fdm_addr>127.0.0.1</fdm_addr>
           <fdm_port_in>9002</fdm_port_in>
           <connectionTimeoutMaxCount>5</connectionTimeoutMaxCount>
@@ -251,29 +250,33 @@
           <control channel="0">
             <jointName>l_hip_pitch</jointName>
             <type>COMMAND</type>
-            <cmd_topic>/ap/l_hip_pitch/cmd</cmd_topic>
-            <p_gain>3</p_gain><servo_min>1000</servo_min><servo_max>2000</servo_max>
+            <cmd_topic>/l_hip_pitch/cmd</cmd_topic>
+            <p_gain>3</p_gain>
+            <servo_min>1000</servo_min><servo_max>2000</servo_max>
             <multiplier>1.571</multiplier><offset>-0.5</offset>
           </control>
           <control channel="1">
             <jointName>r_hip_pitch</jointName>
             <type>COMMAND</type>
-            <cmd_topic>/ap/r_hip_pitch/cmd</cmd_topic>
-            <p_gain>3</p_gain><servo_min>1000</servo_min><servo_max>2000</servo_max>
+            <cmd_topic>/r_hip_pitch/cmd</cmd_topic>
+            <p_gain>3</p_gain>
+            <servo_min>1000</servo_min><servo_max>2000</servo_max>
             <multiplier>1.571</multiplier><offset>-0.5</offset>
           </control>
           <control channel="2">
             <jointName>l_knee_shin</jointName>
             <type>COMMAND</type>
-            <cmd_topic>/ap/l_knee/cmd</cmd_topic>
-            <p_gain>3</p_gain><servo_min>1000</servo_min><servo_max>2000</servo_max>
+            <cmd_topic>/l_knee/cmd</cmd_topic>
+            <p_gain>3</p_gain>
+            <servo_min>1000</servo_min><servo_max>2000</servo_max>
             <multiplier>2.618</multiplier><offset>-0.5</offset>
           </control>
           <control channel="3">
             <jointName>r_knee_shin</jointName>
             <type>COMMAND</type>
-            <cmd_topic>/ap/r_knee/cmd</cmd_topic>
-            <p_gain>3</p_gain><servo_min>1000</servo_min><servo_max>2000</servo_max>
+            <cmd_topic>/r_knee/cmd</cmd_topic>
+            <p_gain>3</p_gain>
+            <servo_min>1000</servo_min><servo_max>2000</servo_max>
             <multiplier>2.618</multiplier><offset>-0.5</offset>
           </control>
         </plugin>
@@ -287,44 +290,44 @@
           <joint_name>l_hip_pitch</joint_name>
           <topic>/l_hip_pitch/cmd</topic>
           <initial_position>-0.09</initial_position>
-          <p_gain>80</p_gain>
-          <d_gain>8</d_gain>
-          <i_gain>0</i_gain>
-          <cmd_max>200</cmd_max>
-          <cmd_min>-200</cmd_min>
+          <p_gain>3</p_gain>
+          <i_gain>0.01</i_gain>
+          <d_gain>10.0</d_gain>
+          <cmd_max>30</cmd_max>
+          <cmd_min>-30</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system"
                 name="gz::sim::systems::JointPositionController">
           <joint_name>r_hip_pitch</joint_name>
           <topic>/r_hip_pitch/cmd</topic>
           <initial_position>-0.09</initial_position>
-          <p_gain>80</p_gain>
-          <d_gain>8</d_gain>
-          <i_gain>0</i_gain>
-          <cmd_max>200</cmd_max>
-          <cmd_min>-200</cmd_min>
+          <p_gain>3</p_gain>
+          <i_gain>0.01</i_gain>
+          <d_gain>10.0</d_gain>
+          <cmd_max>30</cmd_max>
+          <cmd_min>-30</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system"
                 name="gz::sim::systems::JointPositionController">
-          <joint_name>l_knee_shin</joint_name>
+          <joint_name>l_knee</joint_name>
           <topic>/l_knee/cmd</topic>
           <initial_position>0.35</initial_position>
-          <p_gain>120</p_gain>
-          <d_gain>12</d_gain>
-          <i_gain>0</i_gain>
-          <cmd_max>200</cmd_max>
-          <cmd_min>-200</cmd_min>
+          <p_gain>3</p_gain>
+          <i_gain>0.01</i_gain>
+          <d_gain>10.0</d_gain>
+          <cmd_max>30</cmd_max>
+          <cmd_min>-30</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system"
                 name="gz::sim::systems::JointPositionController">
-          <joint_name>r_knee_shin</joint_name>
+          <joint_name>r_knee</joint_name>
           <topic>/r_knee/cmd</topic>
           <initial_position>0.35</initial_position>
-          <p_gain>120</p_gain>
-          <d_gain>12</d_gain>
-          <i_gain>0</i_gain>
-          <cmd_max>200</cmd_max>
-          <cmd_min>-200</cmd_min>
+          <p_gain>3</p_gain>
+          <i_gain>0.01</i_gain>
+          <d_gain>10.0</d_gain>
+          <cmd_max>30</cmd_max>
+          <cmd_min>-30</cmd_min>
         </plugin>
         <plugin filename="gz-sim-apply-joint-force-system"
                 name="gz::sim::systems::ApplyJointForce">
