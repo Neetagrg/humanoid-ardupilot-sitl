@@ -1,91 +1,82 @@
-cat > ~/humanoid-ardupilot-sitl/README.md << 'EOF'
-# ArduHumanoid SITL - Minimal Biped for ArduPilot
+# ArduHumanoid SITL — Bipedal Walking Robot for ArduPilot
 
 [![Gazebo Harmonic](https://img.shields.io/badge/Gazebo-Harmonic-blue)](https://gazebosim.org)
-[![ArduPilot](https://img.shields.io/badge/ArduPilot-SITL-green)](https://ardupilot.org)
+[![ArduPilot Rover](https://img.shields.io/badge/ArduPilot-Rover-green)](https://ardupilot.org)
+[![GSoC 2026](https://img.shields.io/badge/GSoC-2026-orange)](https://summerofcode.withgoogle.com)
 
 ## Overview
 
-A minimal humanoid "vehicle type" running on ArduPilot SITL — proving ArduPilot can command a jointed humanoid frame via the Gazebo plugin architecture.
+A minimal humanoid vehicle type running on ArduPilot Rover SITL — proving ArduPilot can command a bipedal humanoid to walk via Gazebo Harmonic simulation. Built in SDF 1.9 following the official ArduPilot legged robot pattern from [ardupilot_gazebo](https://github.com/ArduPilot/ardupilot_gazebo) and [SITL_Models](https://github.com/ArduPilot/SITL_Models).
 
-Built in **SDF 1.9** (not URDF) for Gazebo Harmonic compatibility, following ArduPilot's existing plugin model from [ardupilot_gazebo](https://github.com/ArduPilot/ardupilot_gazebo).
+## Architecture
 
-## ✅ Milestone Achieved
-
-ArduPilot SITL successfully connects to the humanoid model and receives JSON sensor data:
-- IMU gyro + accelerometer
-- Position + quaternion
-- Velocity
-- EKF3 active, pre-arm good
-
-## Quick Start
-```bash
-# Terminal 1 — Start ArduPilot SITL
-cd ~/ardupilot
-Tools/autotest/sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --console
-
-# Terminal 2 — Launch Gazebo with humanoid
-export GZ_SIM_SYSTEM_PLUGIN_PATH=/usr/local/lib/ardupilot_gazebo:/usr/local/lib
-export GZ_SIM_RESOURCE_PATH=~/humanoid-ardupilot-sitl/models:$GZ_SIM_RESOURCE_PATH
-gz sim ~/humanoid-ardupilot-sitl/worlds/ardupilot_humanoid.sdf
-
-# Terminal 3 — Run balance controller
-python3 scripts/balance_controller.py
+```
+Gazebo Harmonic (8-DOF SDF humanoid)
+         ↓ IMU + pose (JSON)
+ArduPilot Rover SITL (EKF3 sensor fusion)
+         ↓ SRV_Channels (Lua scripting)
+humanoid.lua (ZMP IK + gait controller)
+         ↓ servo PWM
+ArduPilotPlugin → joints move → robot walks
+         ↑
+MAVLink GUIDED/LOITER/AUTO (waypoint navigation)
 ```
 
-## Repository Structure
-humanoid-ardupilot-sitl/
-├── models/
-│   └── biped_robot/
-│       ├── model.config      # Gazebo model metadata
-│       └── model.sdf         # Robot SDF: links, joints, IMU, ArduPilot plugin
-├── worlds/
-│   └── ardupilot_humanoid.sdf  # Gazebo world: physics, ground, sun
-├── params/
-│   └── biped.param           # ArduPilot SITL parameters
-├── scripts/
-│   ├── balance_controller.py # EKF3-based balance controller
-│   ├── calculate_com.py      # Center of mass validator
-│   ├── print_tree.py         # Kinematic tree visualizer
-│   └── validate_inertia.py   # Inertia tensor checker
-└── README.md
+## Quick Start
+
+```bash
+# Terminal 1 — Gazebo
+export GZ_SIM_RESOURCE_PATH=$HOME/ardupilot_gazebo/models:$GZ_SIM_RESOURCE_PATH
+gz sim -v4 ~/ardupilot_gazebo/worlds/humanoid.sdf
+
+# Terminal 2 — ArduPilot Rover SITL
+mkdir -p ~/ardupilot/Rover/scripts
+cp scripts/humanoid.lua ~/ardupilot/Rover/scripts/
+cd ~/ardupilot/Rover
+sim_vehicle.py -v Rover --model JSON --console
+
+# Enable Lua scripting (first run only)
+# In MAVProxy: param set SCR_ENABLE 1
+# Then reboot, then arm to start walking
+# MANUAL> arm throttle
+```
 
 ## Robot Specifications
 
-| Property        | Value                    |
-|-----------------|--------------------------|
-| Total Mass      | 3.9 kg                   |
-| Active DOF      | 4 (2 per leg)            |
-| IMU Lever Arm   | 0.0 m (at torso CoM)     |
-| Physics Engine  | Gazebo Harmonic (DART)   |
-| Control         | ArduPilot JSON interface |
+| Property      | Value                  |
+|---------------|------------------------|
+| Total Mass    | 3.9 kg                 |
+| Active DOF    | 8 (4 per leg)          |
+| Leg Geometry  | L1=L2=0.20m symmetric  |
+| Physics       | Gazebo Harmonic (DART) |
+| Control       | ArduPilot Rover + Lua  |
 
 ## Joint Mapping
 
-| Joint         | Type     | Servo Channel | Limits        |
-|---------------|----------|---------------|---------------|
-| l_hip_pitch   | Revolute | CH1           | -90° to +30°  |
-| r_hip_pitch   | Revolute | CH2           | -90° to +30°  |
-| l_knee        | Revolute | CH3           | 0° to +150°   |
-| r_knee        | Revolute | CH4           | 0° to +150°   |
-| l_ankle       | Fixed    | —             | Rigid         |
-| r_ankle       | Fixed    | —             | Rigid         |
-
-## Design Decisions
-
-- **SDF not URDF** — Gazebo Harmonic best practices, as recommended by mentor
-- **IMU at torso CoM** — Zero lever arm for EKF3, no INS_POS offset needed
-- **Physically grounded inertia** — Thin-rod formula for thighs, sphere for head
-- **ArduPilot plugin** — Same architecture as ardupilot_gazebo iris model
+| Joint       | Channel | Limits       |
+|-------------|---------|--------------|
+| l_hip_pitch | CH1     | -90° to +30° |
+| l_knee      | CH2     | 0° to +150°  |
+| l_ankle     | CH3     | ±30°         |
+| r_hip_pitch | CH4     | -90° to +30° |
+| r_knee      | CH5     | 0° to +150°  |
+| r_ankle     | CH6     | ±30°         |
 
 ## Roadmap
 
-- [x] SDF humanoid model with correct inertia tensors
-- [x] ArduPilot plugin with 4-channel servo mapping
-- [x] Gazebo Harmonic world file
-- [x] ArduPilot SITL JSON connection verified
-- [x] Balance controller using EKF3 state estimation
-- [x] Robot standing stably on flat terrain
-- [ ] Basic gait coordination (stand → step)
-- [ ] Flat terrain navigation
-EOF
+- [x] 8-DOF SDF humanoid model
+- [x] ArduPilot Rover SITL JSON connection
+- [x] EKF3 attitude feedback working
+- [x] Correct ardupilot_gazebo plugin integrated
+- [x] ZMP preview controller (Python)
+- [ ] humanoid.lua gait controller
+- [ ] Robot walks 3+ consecutive steps
+- [ ] MAVLink waypoint navigation
+- [ ] Arms + manipulation (GSoC Phase 2)
+
+## References
+
+- [ArduPilot Walking Robots](https://ardupilot.org/rover/docs/walking-robots.html)
+- [SITL_Models quadruped](https://github.com/ArduPilot/SITL_Models/tree/master/Gazebo)
+- [ardupilot_gazebo plugin](https://github.com/ArduPilot/ardupilot_gazebo)
+- Kajita et al. ICRA 2003 — ZMP Preview Control
