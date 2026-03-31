@@ -1,0 +1,7 @@
+# ArduHumanoid - Gazebo Harmonic SITL
+FRAME_CLASS     1
+FRAME_TYPE      1
+AHRS_EKF_TYPE   3
+EK3_ENABLE      1
+EK2_ENABLE      0
+GPS_TYPE        1
