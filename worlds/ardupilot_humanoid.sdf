@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <sdf version="1.9">
   <world name="ardupilot_humanoid">
-    <physics name="4ms" type="ignore">
+    <physics name="1ms" type="ignore">
       <max_step_size>0.004</max_step_size>
       <real_time_factor>1.0</real_time_factor>
     </physics>
@@ -11,19 +11,16 @@
     <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
     <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
     <light type="directional" name="sun">
-      <cast_shadows>true</cast_shadows><pose>0 0 10 0 0 0</pose>
-      <diffuse>1 1 1 1</diffuse><specular>0.5 0.5 0.5 1</specular>
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.5 0.5 0.5 1</specular>
       <direction>-0.5 0.1 -0.9</direction>
     </light>
     <model name="ground_plane">
       <static>true</static>
       <link name="link">
-        <collision name="collision">
-          <geometry><plane><normal>0 0 1</normal></plane></geometry>
-          <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction>
-            <contact><ode><kp>500000</kp><kd>100</kd><max_vel>0.1</max_vel><min_depth>0.001</min_depth></ode></contact>
-          </surface>
-        </collision>
+        <collision name="collision"><geometry><plane><normal>0 0 1</normal></plane></geometry></collision>
         <visual name="visual">
           <geometry><plane><normal>0 0 1</normal><size>100 100</size></plane></geometry>
           <material><ambient>0.8 0.8 0.8 1</ambient><diffuse>0.8 0.8 0.8 1</diffuse></material>
@@ -31,160 +28,349 @@
       </link>
     </model>
     <model name="ArduBiped_Proto">
-      <static>false</static>
-      <pose>0 0 0.562 0 0 0</pose>
-      <link name="torso">
-        <inertial><mass>2.5</mass>
-          <inertia><ixx>0.020</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.020</iyy><iyz>0</iyz><izz>0.010</izz></inertia>
-        </inertial>
-        <collision name="col"><geometry><box><size>0.15 0.10 0.30</size></box></geometry></collision>
-        <visual name="vis"><geometry><box><size>0.15 0.10 0.30</size></box></geometry>
-          <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material></visual>
-        <sensor name="imu_sensor" type="imu"><always_on>1</always_on><update_rate>1000</update_rate><imu><angular_velocity/><linear_acceleration/></imu></sensor>
-      </link>
-      <link name="head"><pose>0 0 0.225 0 0 0</pose>
-        <inertial><mass>0.200</mass><inertia><ixx>0.0002</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0002</iyy><iyz>0</iyz><izz>0.0002</izz></inertia></inertial>
-        <collision name="col"><geometry><sphere><radius>0.05</radius></sphere></geometry></collision>
-        <visual name="vis"><geometry><sphere><radius>0.05</radius></sphere></geometry>
-          <material><ambient>0.9 0.75 0.6 1</ambient><diffuse>0.9 0.75 0.6 1</diffuse></material></visual>
-      </link>
-      <joint name="torso_to_head" type="fixed"><parent>torso</parent><child>head</child></joint>
-      <link name="l_upper_arm"><pose>0 0.130 0.050 0 0 0</pose>
-        <inertial><mass>0.200</mass><inertia><ixx>0.001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
-        <collision name="col"><geometry><cylinder><radius>0.020</radius><length>0.15</length></cylinder></geometry></collision>
-        <visual name="vis"><geometry><cylinder><radius>0.020</radius><length>0.15</length></cylinder></geometry>
-          <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material></visual>
-      </link>
-      <link name="l_forearm"><pose>0 0.130 -0.100 0 0 0</pose>
-        <inertial><mass>0.150</mass><inertia><ixx>0.0005</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0005</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
-        <collision name="col"><geometry><cylinder><radius>0.015</radius><length>0.15</length></cylinder></geometry></collision>
-        <visual name="vis"><geometry><cylinder><radius>0.015</radius><length>0.15</length></cylinder></geometry>
-          <material><ambient>0.9 0.75 0.6 1</ambient><diffuse>0.9 0.75 0.6 1</diffuse></material></visual>
-      </link>
-      <joint name="l_shoulder" type="fixed"><parent>torso</parent><child>l_upper_arm</child></joint>
-      <joint name="l_elbow" type="fixed"><parent>l_upper_arm</parent><child>l_forearm</child></joint>
-      <link name="r_upper_arm"><pose>0 -0.130 0.050 0 0 0</pose>
-        <inertial><mass>0.200</mass><inertia><ixx>0.001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
-        <collision name="col"><geometry><cylinder><radius>0.020</radius><length>0.15</length></cylinder></geometry></collision>
-        <visual name="vis"><geometry><cylinder><radius>0.020</radius><length>0.15</length></cylinder></geometry>
-          <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material></visual>
-      </link>
-      <link name="r_forearm"><pose>0 -0.130 -0.100 0 0 0</pose>
-        <inertial><mass>0.150</mass><inertia><ixx>0.0005</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0005</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
-        <collision name="col"><geometry><cylinder><radius>0.015</radius><length>0.15</length></cylinder></geometry></collision>
-        <visual name="vis"><geometry><cylinder><radius>0.015</radius><length>0.15</length></cylinder></geometry>
-          <material><ambient>0.9 0.75 0.6 1</ambient><diffuse>0.9 0.75 0.6 1</diffuse></material></visual>
-      </link>
-      <joint name="r_shoulder" type="fixed"><parent>torso</parent><child>r_upper_arm</child></joint>
-      <joint name="r_elbow" type="fixed"><parent>r_upper_arm</parent><child>r_forearm</child></joint>
-      <link name="l_thigh"><pose>0 0.080 -0.150 0 0 0</pose>
-        <inertial><pose>0 0 -0.100 0 0 0</pose><mass>0.500</mass>
-          <inertia><ixx>0.00173</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00182</iyy><iyz>0</iyz><izz>0.00022</izz></inertia></inertial>
-        <collision name="col"><pose>0 0 -0.100 0 0 0</pose><geometry><box><size>0.06 0.04 0.20</size></box></geometry></collision>
-        <visual name="vis"><pose>0 0 -0.100 0 0 0</pose><geometry><box><size>0.06 0.04 0.20</size></box></geometry>
-          <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material></visual>
-      </link>
-      <joint name="l_hip_pitch" type="revolute"><parent>torso</parent><child>l_thigh</child>
-        <axis><xyz>0 1 0</xyz><limit><lower>-1.571</lower><upper>0.523</upper><effort>200</effort><velocity>3</velocity></limit>
-          <dynamics><damping>100.0</damping><spring_stiffness>500.0</spring_stiffness><spring_reference>0.0</spring_reference></dynamics></axis></joint>
-      <link name="l_shin"><pose>0 0.080 -0.350 0 0 0</pose>
-        <inertial><pose>0 0 -0.100 0 0 0</pose><mass>0.300</mass>
-          <inertia><ixx>0.00102</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00106</iyy><iyz>0</iyz><izz>0.000085</izz></inertia></inertial>
-        <collision name="col"><pose>0 0 -0.100 0 0 0</pose><geometry><box><size>0.05 0.03 0.20</size></box></geometry></collision>
-        <visual name="vis"><pose>0 0 -0.100 0 0 0</pose><geometry><box><size>0.05 0.03 0.20</size></box></geometry>
-          <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material></visual>
-      </link>
-      <joint name="l_knee" type="revolute"><parent>l_thigh</parent><child>l_shin</child>
-        <axis><xyz>0 1 0</xyz><limit><lower>-2.618</lower><upper>0.05</upper><effort>200</effort><velocity>3</velocity></limit>
-          <dynamics><damping>100.0</damping><spring_stiffness>500.0</spring_stiffness><spring_reference>0.0</spring_reference></dynamics></axis></joint>
-      <link name="l_foot"><pose>0 0.080 -0.550 0 0 0</pose>
-        <inertial><pose>0 0 -0.010 0 0 0</pose><mass>0.150</mass>
-          <inertia><ixx>0.000130</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.000410</iyy><iyz>0</iyz><izz>0.000530</izz></inertia></inertial>
-        <collision name="col"><pose>0 0 -0.010 0 0 0</pose><geometry><box><size>0.18 0.10 0.02</size></box></geometry>
-          <surface><friction><ode><mu>1.2</mu><mu2>1.2</mu2></ode></friction>
-            <contact><ode><kp>500000</kp><kd>100</kd><max_vel>0.1</max_vel><min_depth>0.001</min_depth></ode></contact></surface></collision>
-        <visual name="vis"><pose>0 0 -0.010 0 0 0</pose><geometry><box><size>0.18 0.10 0.02</size></box></geometry>
-          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material></visual>
-      </link>
-      <joint name="l_ankle" type="revolute"><parent>l_shin</parent><child>l_foot</child>
-        <axis><xyz>0 1 0</xyz><limit><lower>-0.5</lower><upper>0.5</upper><effort>100</effort><velocity>3</velocity></limit>
-          <dynamics><damping>100.0</damping><spring_stiffness>500.0</spring_stiffness><spring_reference>0.0</spring_reference></dynamics></axis></joint>
-      <link name="r_thigh"><pose>0 -0.080 -0.150 0 0 0</pose>
-        <inertial><pose>0 0 -0.100 0 0 0</pose><mass>0.500</mass>
-          <inertia><ixx>0.00173</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00182</iyy><iyz>0</iyz><izz>0.00022</izz></inertia></inertial>
-        <collision name="col"><pose>0 0 -0.100 0 0 0</pose><geometry><box><size>0.06 0.04 0.20</size></box></geometry></collision>
-        <visual name="vis"><pose>0 0 -0.100 0 0 0</pose><geometry><box><size>0.06 0.04 0.20</size></box></geometry>
-          <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material></visual>
-      </link>
-      <joint name="r_hip_pitch" type="revolute"><parent>torso</parent><child>r_thigh</child>
-        <axis><xyz>0 1 0</xyz><limit><lower>-1.571</lower><upper>0.523</upper><effort>200</effort><velocity>3</velocity></limit>
-          <dynamics><damping>100.0</damping><spring_stiffness>500.0</spring_stiffness><spring_reference>0.0</spring_reference></dynamics></axis></joint>
-      <link name="r_shin"><pose>0 -0.080 -0.350 0 0 0</pose>
-        <inertial><pose>0 0 -0.100 0 0 0</pose><mass>0.300</mass>
-          <inertia><ixx>0.00102</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00106</iyy><iyz>0</iyz><izz>0.000085</izz></inertia></inertial>
-        <collision name="col"><pose>0 0 -0.100 0 0 0</pose><geometry><box><size>0.05 0.03 0.20</size></box></geometry></collision>
-        <visual name="vis"><pose>0 0 -0.100 0 0 0</pose><geometry><box><size>0.05 0.03 0.20</size></box></geometry>
-          <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material></visual>
-      </link>
-      <joint name="r_knee" type="revolute"><parent>r_thigh</parent><child>r_shin</child>
-        <axis><xyz>0 1 0</xyz><limit><lower>-2.618</lower><upper>0.05</upper><effort>200</effort><velocity>3</velocity></limit>
-          <dynamics><damping>100.0</damping><spring_stiffness>500.0</spring_stiffness><spring_reference>0.0</spring_reference></dynamics></axis></joint>
-      <link name="r_foot"><pose>0 -0.080 -0.550 0 0 0</pose>
-        <inertial><pose>0 0 -0.010 0 0 0</pose><mass>0.150</mass>
-          <inertia><ixx>0.000130</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.000410</iyy><iyz>0</iyz><izz>0.000530</izz></inertia></inertial>
-        <collision name="col"><pose>0 0 -0.010 0 0 0</pose><geometry><box><size>0.18 0.10 0.02</size></box></geometry>
-          <surface><friction><ode><mu>1.2</mu><mu2>1.2</mu2></ode></friction>
-            <contact><ode><kp>500000</kp><kd>100</kd><max_vel>0.1</max_vel><min_depth>0.001</min_depth></ode></contact></surface></collision>
-        <visual name="vis"><pose>0 0 -0.010 0 0 0</pose><geometry><box><size>0.18 0.10 0.02</size></box></geometry>
-          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material></visual>
-      </link>
-      <joint name="r_ankle" type="revolute"><parent>r_shin</parent><child>r_foot</child>
-        <axis><xyz>0 1 0</xyz><limit><lower>-0.5</lower><upper>0.5</upper><effort>100</effort><velocity>3</velocity></limit>
-          <dynamics><damping>100.0</damping><spring_stiffness>500.0</spring_stiffness><spring_reference>0.0</spring_reference></dynamics></axis></joint>
-      <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher"/>
-      <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-        <joint_name>l_hip_pitch</joint_name><topic>/l_hip_pitch/cmd</topic>
-        <initial_position>0.0</initial_position><p_gain>15</p_gain><i_gain>0.0</i_gain><d_gain>3</d_gain>
-        <cmd_max>60</cmd_max><cmd_min>-60</cmd_min></plugin>
-      <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-        <joint_name>l_knee</joint_name><topic>/l_knee/cmd</topic>
-        <initial_position>0.0</initial_position><p_gain>15</p_gain><i_gain>0.0</i_gain><d_gain>3</d_gain>
-        <cmd_max>60</cmd_max><cmd_min>-60</cmd_min></plugin>
-      <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-        <joint_name>l_ankle</joint_name><topic>/l_ankle/cmd</topic>
-        <initial_position>0.0</initial_position><p_gain>15</p_gain><i_gain>0.0</i_gain><d_gain>3</d_gain>
-        <cmd_max>40</cmd_max><cmd_min>-40</cmd_min></plugin>
-      <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-        <joint_name>r_hip_pitch</joint_name><topic>/r_hip_pitch/cmd</topic>
-        <initial_position>0.0</initial_position><p_gain>15</p_gain><i_gain>0.0</i_gain><d_gain>3</d_gain>
-        <cmd_max>60</cmd_max><cmd_min>-60</cmd_min></plugin>
-      <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-        <joint_name>r_knee</joint_name><topic>/r_knee/cmd</topic>
-        <initial_position>0.0</initial_position><p_gain>15</p_gain><i_gain>0.0</i_gain><d_gain>3</d_gain>
-        <cmd_max>60</cmd_max><cmd_min>-60</cmd_min></plugin>
-      <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-        <joint_name>r_ankle</joint_name><topic>/r_ankle/cmd</topic>
-        <initial_position>0.0</initial_position><p_gain>15</p_gain><i_gain>0.0</i_gain><d_gain>3</d_gain>
-        <cmd_max>40</cmd_max><cmd_min>-40</cmd_min></plugin>
-      <plugin name="ArduPilotPlugin" filename="ArduPilotPlugin">
-        <fdm_addr>127.0.0.1</fdm_addr><fdm_port_in>9002</fdm_port_in>
-        <connectionTimeoutMaxCount>5</connectionTimeoutMaxCount><lock_step>1</lock_step>
-        <modelXYZToAirplaneXForwardZDown degrees="true">0 0 0 180 0 0</modelXYZToAirplaneXForwardZDown>
-        <gazeboXYZToNED degrees="true">0 0 0 180 0 90</gazeboXYZToNED>
-        <imuName>torso::imu_sensor</imuName>
-        <control channel="0"><type>COMMAND</type><jointName>ArduBiped_Proto::l_hip_pitch</jointName>
-          <servo_min>1000</servo_min><servo_max>2000</servo_max>
-          <cmd_min>-0.785</cmd_min><cmd_max>0.785</cmd_max><cmd_topic>/l_hip_pitch/cmd</cmd_topic></control>
-        <control channel="1"><type>COMMAND</type><jointName>ArduBiped_Proto::r_hip_pitch</jointName>
-          <servo_min>1000</servo_min><servo_max>2000</servo_max>
-          <cmd_min>-0.785</cmd_min><cmd_max>0.785</cmd_max><cmd_topic>/r_hip_pitch/cmd</cmd_topic></control>
-        <control channel="2"><type>COMMAND</type><jointName>ArduBiped_Proto::l_knee</jointName>
-          <servo_min>1000</servo_min><servo_max>2000</servo_max>
-          <cmd_min>-0.785</cmd_min><cmd_max>0.785</cmd_max><cmd_topic>/l_knee/cmd</cmd_topic></control>
-        <control channel="3"><type>COMMAND</type><jointName>ArduBiped_Proto::r_knee</jointName>
-          <servo_min>1000</servo_min><servo_max>2000</servo_max>
-          <cmd_min>-0.785</cmd_min><cmd_max>0.785</cmd_max><cmd_topic>/r_knee/cmd</cmd_topic></control>
-      </plugin>
-    </model>
+    
+    <static>false</static>
+        <pose>0 0 0.57 0.12 0 0</pose>
+        <link name="torso">
+          <inertial>
+            <mass>2.5</mass>
+            <inertia><ixx>0.020</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.020</iyy><iyz>0</iyz><izz>0.010</izz></inertia>
+          </inertial>
+          <collision name="collision"><geometry><box><size>0.15 0.10 0.30</size></box></geometry></collision>
+          <visual name="visual">
+            <geometry><box><size>0.15 0.10 0.30</size></box></geometry>
+            <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material>
+          </visual>
+          <sensor name="imu_sensor" type="imu">
+            <always_on>1</always_on>
+            <update_rate>1000</update_rate>
+          </sensor>
+        </link>
+        <link name="head">
+          <pose>0 0 0.225 0 0 0</pose>
+          <inertial><mass>0.200</mass><inertia><ixx>0.0002</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0002</iyy><iyz>0</iyz><izz>0.0002</izz></inertia></inertial>
+          <collision name="c"><geometry><sphere><radius>0.05</radius></sphere></geometry></collision>
+          <visual name="v">
+            <geometry><sphere><radius>0.05</radius></sphere></geometry>
+            <material><ambient>0.9 0.75 0.6 1</ambient><diffuse>0.9 0.75 0.6 1</diffuse></material>
+          </visual>
+        </link>
+        <joint name="torso_to_head" type="fixed">
+          <parent>torso</parent><child>head</child>
+        </joint>
+        <link name="l_upper_arm">
+          <pose>0 0.130 0.050 0 0 0</pose>
+          <inertial><mass>0.200</mass><inertia><ixx>0.001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
+          <collision name="c"><geometry><cylinder><radius>0.020</radius><length>0.15</length></cylinder></geometry></collision>
+          <visual name="v">
+            <geometry><cylinder><radius>0.020</radius><length>0.15</length></cylinder></geometry>
+            <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material>
+          </visual>
+        </link>
+        <link name="r_upper_arm">
+          <pose>0 -0.130 0.050 0 0 0</pose>
+          <inertial><mass>0.200</mass><inertia><ixx>0.001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
+          <collision name="c"><geometry><cylinder><radius>0.020</radius><length>0.15</length></cylinder></geometry></collision>
+          <visual name="v">
+            <geometry><cylinder><radius>0.020</radius><length>0.15</length></cylinder></geometry>
+            <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material>
+          </visual>
+        </link>
+        <link name="l_forearm">
+          <pose>0 0.130 -0.100 0 0 0</pose>
+          <inertial><mass>0.150</mass><inertia><ixx>0.0005</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0005</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
+          <collision name="c"><geometry><cylinder><radius>0.015</radius><length>0.15</length></cylinder></geometry></collision>
+          <visual name="v">
+            <geometry><cylinder><radius>0.015</radius><length>0.15</length></cylinder></geometry>
+            <material><ambient>0.9 0.75 0.6 1</ambient><diffuse>0.9 0.75 0.6 1</diffuse></material>
+          </visual>
+        </link>
+        <link name="r_forearm">
+          <pose>0 -0.130 -0.100 0 0 0</pose>
+          <inertial><mass>0.150</mass><inertia><ixx>0.0005</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0005</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
+          <collision name="c"><geometry><cylinder><radius>0.015</radius><length>0.15</length></cylinder></geometry></collision>
+          <visual name="v">
+            <geometry><cylinder><radius>0.015</radius><length>0.15</length></cylinder></geometry>
+            <material><ambient>0.9 0.75 0.6 1</ambient><diffuse>0.9 0.75 0.6 1</diffuse></material>
+          </visual>
+        </link>
+        <joint name="l_shoulder" type="fixed">
+          <parent>torso</parent><child>l_upper_arm</child>
+        </joint>
+        <joint name="r_shoulder" type="fixed">
+          <parent>torso</parent><child>r_upper_arm</child>
+        </joint>
+        <joint name="l_elbow" type="fixed">
+          <parent>l_upper_arm</parent><child>l_forearm</child>
+        </joint>
+        <joint name="r_elbow" type="fixed">
+          <parent>r_upper_arm</parent><child>r_forearm</child>
+        </joint>
+        <link name="l_hip_pitch_link">
+          <pose>0 0.080 -0.150 0 0 0</pose>
+          <inertial><mass>0.100</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
+          <collision name="c"><geometry><sphere><radius>0.03</radius></sphere></geometry></collision>
+          <visual name="v">
+            <geometry><sphere><radius>0.03</radius></sphere></geometry>
+            <material><ambient>0.8 0.8 0.8 1</ambient><diffuse>0.8 0.8 0.8 1</diffuse></material>
+          </visual>
+        </link>
+        <link name="l_thigh">
+          <pose>0 0.080 -0.250 0 0 0</pose>
+          <inertial><mass>0.500</mass><inertia><ixx>0.00375</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00375</iyy><iyz>0</iyz><izz>0.000156</izz></inertia></inertial>
+          <collision name="c"><geometry><box><size>0.06 0.04 0.20</size></box></geometry></collision>
+          <visual name="v">
+            <geometry><box><size>0.06 0.04 0.20</size></box></geometry>
+            <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material>
+          </visual>
+        </link>
+        <link name="l_shin">
+          <pose>0 0.080 -0.450 0 0 0</pose>
+          <inertial><mass>0.300</mass><inertia><ixx>0.00150</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00150</iyy><iyz>0</iyz><izz>0.000094</izz></inertia></inertial>
+          <collision name="c"><geometry><box><size>0.05 0.03 0.20</size></box></geometry></collision>
+          <visual name="v">
+            <geometry><box><size>0.05 0.03 0.20</size></box></geometry>
+            <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material>
+          </visual>
+        </link>
+        <!-- l_foot with soft contact -->
+        <link name="l_foot">
+          <pose>0 0.080 -0.560 0 0 0</pose>
+          <inertial><mass>0.150</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0003</iyy><iyz>0</iyz><izz>0.0004</izz></inertia></inertial>
+          <collision name="c">
+            <geometry><box><size>0.18 0.10 0.02</size></box></geometry>
+            <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction></surface>
+          </collision>
+          <visual name="v">
+            <geometry><box><size>0.18 0.10 0.02</size></box></geometry>
+            <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+          </visual>
+        </link>
+        <link name="r_hip_pitch_link">
+          <pose>0 -0.080 -0.150 0 0 0</pose>
+          <inertial><mass>0.100</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0001</iyy><iyz>0</iyz><izz>0.0001</izz></inertia></inertial>
+          <collision name="c"><geometry><sphere><radius>0.03</radius></sphere></geometry></collision>
+          <visual name="v">
+            <geometry><sphere><radius>0.03</radius></sphere></geometry>
+            <material><ambient>0.8 0.8 0.8 1</ambient><diffuse>0.8 0.8 0.8 1</diffuse></material>
+          </visual>
+        </link>
+        <link name="r_thigh">
+          <pose>0 -0.080 -0.250 0 0 0</pose>
+          <inertial><mass>0.500</mass><inertia><ixx>0.00375</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00375</iyy><iyz>0</iyz><izz>0.000156</izz></inertia></inertial>
+          <collision name="c"><geometry><box><size>0.06 0.04 0.20</size></box></geometry></collision>
+          <visual name="v">
+            <geometry><box><size>0.06 0.04 0.20</size></box></geometry>
+            <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material>
+          </visual>
+        </link>
+        <link name="r_shin">
+          <pose>0 -0.080 -0.450 0 0 0</pose>
+          <inertial><mass>0.300</mass><inertia><ixx>0.00150</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.00150</iyy><iyz>0</iyz><izz>0.000094</izz></inertia></inertial>
+          <collision name="c"><geometry><box><size>0.05 0.03 0.20</size></box></geometry></collision>
+          <visual name="v">
+            <geometry><box><size>0.05 0.03 0.20</size></box></geometry>
+            <material><ambient>0.2 0.5 0.8 1</ambient><diffuse>0.2 0.5 0.8 1</diffuse></material>
+          </visual>
+        </link>
+        <link name="r_foot">
+          <pose>0 -0.080 -0.560 0 0 0</pose>
+          <inertial><mass>0.150</mass><inertia><ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz><iyy>0.0003</iyy><iyz>0</iyz><izz>0.0004</izz></inertia></inertial>
+          <collision name="c">
+            <geometry><box><size>0.18 0.10 0.02</size></box></geometry>
+            <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction></surface>
+          </collision>
+          <visual name="v">
+            <geometry><box><size>0.18 0.10 0.02</size></box></geometry>
+            <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+          </visual>
+        </link>
+        <joint name="l_hip_pitch" type="revolute">
+          <parent>torso</parent><child>l_hip_pitch_link</child>
+          <axis>
+            <xyz>0 1 0</xyz>
+            <limit><lower>-1.571</lower><upper>0.523</upper><effort>200</effort><velocity>3</velocity></limit>
+          
+          <dynamics><damping>20.0</damping><friction>5.0</friction><spring_stiffness>500.0</spring_stiffness><spring_reference>0</spring_reference></dynamics>
+        </axis>
+        </joint>
+        <joint name="l_knee" type="revolute">
+          <parent>l_hip_pitch_link</parent><child>l_thigh</child>
+          <axis>
+            <xyz>0 1 0</xyz>
+            <limit><lower>0</lower><upper>2.618</upper><effort>200</effort><velocity>3</velocity></limit>
+          
+          <dynamics><damping>20.0</damping><friction>5.0</friction><spring_stiffness>500.0</spring_stiffness><spring_reference>0</spring_reference></dynamics>
+        </axis>
+        </joint>
+        <joint name="l_knee_shin" type="revolute">
+          <parent>l_thigh</parent><child>l_shin</child>
+          <axis>
+            <xyz>0 1 0</xyz>
+            <limit><lower>0</lower><upper>2.618</upper><effort>200</effort><velocity>3</velocity></limit>
+          
+          <dynamics><damping>20.0</damping><friction>5.0</friction><spring_stiffness>500.0</spring_stiffness><spring_reference>0</spring_reference></dynamics>
+        </axis>
+        </joint>
+        <joint name="l_ankle" type="revolute">
+          <parent>l_shin</parent><child>l_foot</child>
+          <axis>
+            <xyz>0 1 0</xyz>
+            <limit><lower>-0.5</lower><upper>0.5</upper><effort>100</effort><velocity>3</velocity></limit>
+          
+          <dynamics><damping>20.0</damping><friction>5.0</friction><spring_stiffness>500.0</spring_stiffness><spring_reference>0</spring_reference></dynamics>
+        </axis>
+        </joint>
+        <joint name="r_hip_pitch" type="revolute">
+          <parent>torso</parent><child>r_hip_pitch_link</child>
+          <axis>
+            <xyz>0 1 0</xyz>
+            <limit><lower>-1.571</lower><upper>0.523</upper><effort>200</effort><velocity>3</velocity></limit>
+          
+          <dynamics><damping>20.0</damping><friction>5.0</friction><spring_stiffness>500.0</spring_stiffness><spring_reference>0</spring_reference></dynamics>
+        </axis>
+        </joint>
+        <joint name="r_knee" type="revolute">
+          <parent>r_hip_pitch_link</parent><child>r_thigh</child>
+          <axis>
+            <xyz>0 1 0</xyz>
+            <limit><lower>0</lower><upper>2.618</upper><effort>200</effort><velocity>3</velocity></limit>
+          
+          <dynamics><damping>20.0</damping><friction>5.0</friction><spring_stiffness>500.0</spring_stiffness><spring_reference>0</spring_reference></dynamics>
+        </axis>
+        </joint>
+        <joint name="r_knee_shin" type="revolute">
+          <parent>r_thigh</parent><child>r_shin</child>
+          <axis>
+            <xyz>0 1 0</xyz>
+            <limit><lower>0</lower><upper>2.618</upper><effort>200</effort><velocity>3</velocity></limit>
+          
+          <dynamics><damping>20.0</damping><friction>5.0</friction><spring_stiffness>500.0</spring_stiffness><spring_reference>0</spring_reference></dynamics>
+        </axis>
+        </joint>
+        <joint name="r_ankle" type="revolute">
+          <parent>r_shin</parent><child>r_foot</child>
+          <axis>
+            <xyz>0 1 0</xyz>
+            <limit><lower>-0.5</lower><upper>0.5</upper><effort>100</effort><velocity>3</velocity></limit>
+          
+          <dynamics><damping>20.0</damping><friction>5.0</friction><spring_stiffness>500.0</spring_stiffness><spring_reference>0</spring_reference></dynamics>
+        </axis>
+        </joint>
+        <plugin name="ArduPilotPlugin" filename="ArduPilotPlugin">
+          <fdm_addr>127.0.0.1</fdm_addr>
+          <fdm_port_in>9002</fdm_port_in>
+          <connectionTimeoutMaxCount>5</connectionTimeoutMaxCount>
+          <lock_step>0</lock_step>
+          <modelXYZToAirplaneXForwardZDown degrees="true">0 0 0 180 0 0</modelXYZToAirplaneXForwardZDown>
+          <gazeboXYZToNED degrees="true">0 0 0 180 0 90</gazeboXYZToNED>
+          <imuName>torso::imu_sensor</imuName>
+          <control channel="0">
+            <jointName>l_hip_pitch</jointName>
+            <type>POSITION</type>
+            <cmd_topic>/l_hip_pitch/cmd</cmd_topic>
+            <p_gain>3</p_gain>
+            <servo_min>1000</servo_min><servo_max>2000</servo_max>
+            <multiplier>1.571</multiplier><offset>-0.5</offset>
+          </control>
+          <control channel="1">
+            <jointName>r_hip_pitch</jointName>
+            <type>POSITION</type>
+            <cmd_topic>/r_hip_pitch/cmd</cmd_topic>
+            <p_gain>3</p_gain>
+            <servo_min>1000</servo_min><servo_max>2000</servo_max>
+            <multiplier>1.571</multiplier><offset>-0.5</offset>
+          </control>
+          <control channel="2">
+            <jointName>l_knee_shin</jointName>
+            <type>POSITION</type>
+            <cmd_topic>/l_knee/cmd</cmd_topic>
+            <p_gain>3</p_gain>
+            <servo_min>1000</servo_min><servo_max>2000</servo_max>
+            <multiplier>2.618</multiplier><offset>-0.5</offset>
+          </control>
+          <control channel="3">
+            <jointName>r_knee_shin</jointName>
+            <type>POSITION</type>
+            <cmd_topic>/r_knee/cmd</cmd_topic>
+            <p_gain>3</p_gain>
+            <servo_min>1000</servo_min><servo_max>2000</servo_max>
+            <multiplier>2.618</multiplier><offset>-0.5</offset>
+          </control>
+        </plugin>
+    
+        <plugin filename="gz-sim-joint-state-publisher-system"
+                name="gz::sim::systems::JointStatePublisher">
+        </plugin>
+
+        <plugin filename="gz-sim-joint-position-controller-system"
+                name="gz::sim::systems::JointPositionController">
+          <joint_name>l_hip_pitch</joint_name>
+          <topic>/l_hip_pitch/cmd</topic>
+          <initial_position>-0.09</initial_position>
+          <p_gain>3</p_gain>
+          <i_gain>0.01</i_gain>
+          <d_gain>10.0</d_gain>
+          <cmd_max>30</cmd_max>
+          <cmd_min>-30</cmd_min>
+        </plugin>
+        <plugin filename="gz-sim-joint-position-controller-system"
+                name="gz::sim::systems::JointPositionController">
+          <joint_name>r_hip_pitch</joint_name>
+          <topic>/r_hip_pitch/cmd</topic>
+          <initial_position>-0.09</initial_position>
+          <p_gain>3</p_gain>
+          <i_gain>0.01</i_gain>
+          <d_gain>10.0</d_gain>
+          <cmd_max>30</cmd_max>
+          <cmd_min>-30</cmd_min>
+        </plugin>
+        <plugin filename="gz-sim-joint-position-controller-system"
+                name="gz::sim::systems::JointPositionController">
+          <joint_name>l_knee</joint_name>
+          <topic>/l_knee/cmd</topic>
+          <initial_position>0.35</initial_position>
+          <p_gain>3</p_gain>
+          <i_gain>0.01</i_gain>
+          <d_gain>10.0</d_gain>
+          <cmd_max>30</cmd_max>
+          <cmd_min>-30</cmd_min>
+        </plugin>
+        <plugin filename="gz-sim-joint-position-controller-system"
+                name="gz::sim::systems::JointPositionController">
+          <joint_name>r_knee</joint_name>
+          <topic>/r_knee/cmd</topic>
+          <initial_position>0.35</initial_position>
+          <p_gain>3</p_gain>
+          <i_gain>0.01</i_gain>
+          <d_gain>10.0</d_gain>
+          <cmd_max>30</cmd_max>
+          <cmd_min>-30</cmd_min>
+        </plugin>
+        <plugin filename="gz-sim-apply-joint-force-system"
+                name="gz::sim::systems::ApplyJointForce">
+            <joint_name>l_hip_pitch</joint_name>
+        </plugin>
+        <plugin filename="gz-sim-apply-joint-force-system"
+                name="gz::sim::systems::ApplyJointForce">
+            <joint_name>r_hip_pitch</joint_name>
+        </plugin>
+        <plugin filename="gz-sim-apply-joint-force-system"
+                name="gz::sim::systems::ApplyJointForce">
+            <joint_name>l_knee_shin</joint_name>
+        </plugin>
+        <plugin filename="gz-sim-apply-joint-force-system"
+                name="gz::sim::systems::ApplyJointForce">
+            <joint_name>r_knee_shin</joint_name>
+        </plugin>
+        <plugin filename="gz-sim-apply-joint-force-system"
+                name="gz::sim::systems::ApplyJointForce">
+            <joint_name>l_ankle</joint_name>
+        </plugin>
+        <plugin filename="gz-sim-apply-joint-force-system"
+                name="gz::sim::systems::ApplyJointForce">
+            <joint_name>r_ankle</joint_name>
+        </plugin>
+      </model>
   </world>
 </sdf>

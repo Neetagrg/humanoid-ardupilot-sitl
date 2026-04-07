@@ -34,11 +34,12 @@ local function solve_ik(fx,fz)
   return hip,knee
 end
 local function stand_pose()
-  set_joints(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+  local hip,knee=solve_ik(0,LEG_LEN); local ankle=-hip
+  set_joints(hip,knee,ankle,hip,knee,ankle)
 end
 local function update()
   if not arming:is_armed() then stand_pose(); gait_state=S_STAND; phase_start_ms=millis():tofloat(); return update,LOOP_PERIOD_MS end
-  local thr=rc:get_pwm(3); gcs:send_text(6,"THR:"..tostring(thr)); local walking=(thr~=nil)and(thr>1550)
+  local thr=rc:get_pwm(3); local walking=(thr~=nil)and(thr>1550)
   if not walking then stand_pose(); gait_state=S_STAND; phase_start_ms=millis():tofloat(); return update,LOOP_PERIOD_MS end
   local now=millis():tofloat(); local elapsed=now-phase_start_ms
   if gait_state==S_STAND then gait_state=S_SHIFT_RIGHT; phase_start_ms=now; elapsed=0 end
