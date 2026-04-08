@@ -314,11 +314,11 @@
           <joint_name>l_hip_pitch</joint_name>
           <topic>/l_hip_pitch/cmd</topic>
           <initial_position>-0.09</initial_position>
-          <p_gain>3</p_gain>
-          <i_gain>0.01</i_gain>
-          <d_gain>10.0</d_gain>
-          <cmd_max>30</cmd_max>
-          <cmd_min>-30</cmd_min>
+          <p_gain>10</p_gain>
+          <i_gain>0</i_gain>
+          <d_gain>0.1</d_gain>
+          <cmd_max>5</cmd_max>
+          <cmd_min>-5</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system"
                 name="gz::sim::systems::JointPositionController">
